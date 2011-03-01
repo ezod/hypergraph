@@ -11,9 +11,14 @@ class Edge(frozenset):
     """\
     Edge class.
     """
-    def __new__(cls, edge):
+    def __new__(cls, edge, head=None):
         """\
         Constructor. Verifies the immutability of the vertices.
+
+        @param edge: Initializing iterable.
+        @type edge: C{object}
+        @param head: Head vertex (optional).
+        @type head: C{object}
         """
         try:
             assert all([vertex.__hash__ for vertex in edge])
@@ -23,32 +28,93 @@ class Edge(frozenset):
             raise ValueError('edge must contain at least one vertex')
         return frozenset.__new__(cls, edge)
 
-    @property
-    def head(self):
+    def __init__(self, edge, head=None):
         """\
-        The head vertex of this edge (if any).
+        Constructor. Verifies and sets the head vertex if applicable.
+
+        @param edge: Initializing iterable.
+        @type edge: C{object}
+        @param head: Head vertex (optional).
+        @type head: C{object}
         """
         try:
-            return self._head
-        except AttributeError:
-            self._head = None
-            return self._head
+            assert not head or head in self
+        except AssertionError:
+            raise ValueError('edge has no vertex %s' % head)
+        self._head = head
 
-    @head.setter
-    def head(self, vertex):
+    def __hash__(self):
         """\
-        Set the head vertex of this edge.
+        Hash function.
         """
-        if not vertex in self:
-            raise ValueError('edge has no vertex \'%s\'' % vertex)
-        self._head = vertex
+        return super(Edge, self).__hash__() + \
+            (self.head and self.head.__hash__() or 0)
+
+    def __repr__(self):
+        """\
+        Canonical string representation.
+        """
+        if self.head:
+            return '%s(%s, %s)' % \
+                (self.__class__.__name__, list(self), self.head)
+        else:
+            return super(Edge, self).__repr__()
+
+    __str__ = __repr__
+
+    @property
+    def head(self):
+        return self._head
 
 
 class Hypergraph(object):
     """\
     Hypergraph class.
     """
-    pass
+    def __init__(self, vertices=set(), edges=set(), weights={}, directed=False):
+        """\
+        Constructor.
+        """
+        self._directed = directed
+        try:
+            assert all([vertex.__hash__ for vertex in vertices])
+        except (AttributeError, AssertionError):
+            raise TypeError('vertices must be immutable')
+        self._vertices = vertices
+        self._weights = {}
+        try:
+            for edge in edges:
+                assert isinstance(edge, Edge)
+                assert all([vertex in vertices for vertex in edge])
+                assert not directed or edge.head
+                try:
+                    self._weights[edge] = float(weights[edge])
+                except KeyError:
+                    self._weights[edge] = 1.0
+        except AssertionError:
+            raise ValueError('invalid edge %s' % edge)
+        self._edges = edges
+
+    @property
+    def directed(self):
+        return self._directed
+
+    @property
+    def vertices(self):
+        return self._vertices
+
+    @property
+    def edges(self):
+        return self._edges
+
+    def weight(self, edge):
+        """\
+        Return the weight of a given edge.
+
+        @param edge: The edge.
+        @type edge: L{Edge}
+        """
+        return self._weights[edge]
 
 
 class Graph(Hypergraph):
