@@ -192,6 +192,17 @@ class Hypergraph(object):
         else:
             return Edge([u, v]) in self.edges
 
+    def neighbors(self, vertex):
+        """\
+        Return the set of vertices which are adjacent to a given vertex.
+
+        @param vertex: The vertex.
+        @type vertex: C{object}
+        @return: The set of vertices adjacent to the vertex.
+        @rtype: C{set}
+        """
+        return set([v for v in self.vertices() if self.adjacent(vertex, v)])
+
 
 class Graph(Hypergraph):
     """\
