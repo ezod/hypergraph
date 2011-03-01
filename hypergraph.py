@@ -86,7 +86,8 @@ class Hypergraph(object):
             for edge in edges:
                 assert isinstance(edge, Edge)
                 assert all([vertex in vertices for vertex in edge])
-                assert not any[directed, edge.head] or all[directed, edge.head]
+                assert (not directed and not edge.head) \
+                    or (directed and edge.head)
                 try:
                     self._weights[edge] = float(weights[edge])
                 except KeyError:
@@ -121,4 +122,12 @@ class Graph(Hypergraph):
     """\
     Graph (2-uniform hypergraph) class.
     """
-    pass
+    def __init__(self, vertices=set(), edges=set(), weights={}, directed=False):
+        """\
+        Constructor.
+        """
+        try:
+            assert all([len(edge) == 2 for edge in edges])
+        except AssertionError:
+            raise ValueError('edges must have exactly two vertices')
+        super(Graph, self).__init__(vertices, edges, weights, directed)
