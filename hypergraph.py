@@ -7,9 +7,9 @@ Python module for graphs and hypergraphs.
 @license: GPL-3
 """
 
-class GraphEdge(tuple):
+class Edge(frozenset):
     """\
-    Graph edge class.
+    Edge class.
     """
     def __new__(cls, edge):
         """\
@@ -19,7 +19,29 @@ class GraphEdge(tuple):
             assert all([vertex.__hash__ for vertex in edge])
         except (AttributeError, AssertionError):
             raise TypeError('vertices must be immutable')
-        return tuple.__new__(cls, edge)
+        if not edge:
+            raise ValueError('edge must contain at least one vertex')
+        return frozenset.__new__(cls, edge)
+
+    @property
+    def head(self):
+        """\
+        The head vertex of this edge (if any).
+        """
+        try:
+            return self._head
+        except AttributeError:
+            self._head = None
+            return self._head
+
+    @head.setter
+    def head(self, vertex):
+        """\
+        Set the head vertex of this edge.
+        """
+        if not vertex in self:
+            raise ValueError('edge has no vertex \'%s\'' % vertex)
+        self._head = vertex
 
 
 class Hypergraph(object):
