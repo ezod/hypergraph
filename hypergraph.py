@@ -117,6 +117,15 @@ class Hypergraph(object):
         """
         return self._weights[edge]
 
+    def uniform(self, k):
+        """\
+        Return whether this is a k-uniform hypergraph.
+
+        @param k: The value of k.
+        @type k: C{int}
+        """
+        return all([len(edge) == k for edge in self.edges])
+
 
 class Graph(Hypergraph):
     """\
@@ -131,3 +140,12 @@ class Graph(Hypergraph):
         except AssertionError:
             raise ValueError('edges must have exactly two vertices')
         super(Graph, self).__init__(vertices, edges, weights, directed)
+
+    def uniform(self, k):
+        """\
+        Return whether this is a k-uniform hypergraph.
+
+        @param k: The value of k.
+        @type k: C{int}
+        """
+        return k == 2
