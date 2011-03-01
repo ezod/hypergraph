@@ -96,6 +96,56 @@ class Hypergraph(object):
             raise ValueError('invalid edge %s' % edge)
         self._edges = edges
 
+    def add_vertex(self, vertex):
+        """\
+        Add a vertex to this hypergraph.
+
+        @param vertex: The vertex object to add.
+        @type vertex: C{object}
+        """
+        try:
+            assert vertex.__hash__
+        except (AttributeError, AssertionError):
+            raise TypeError('vertex must be immutable')
+        self._vertices.add(vertex)
+
+    def remove_vertex(self, vertex):
+        """\
+        Remove a vertex and all incident edges from this hypergraph.
+
+        @param vertex: The vertex object to remove.
+        @type vertex: C{object}
+        """
+        for edge in self.edges():
+            if vertex in edge:
+                self._edges.remove(edge)
+        self._vertices.remove(vertex)
+
+    def add_edge(self, edge):
+        """\
+        Add an edge to this hypergraph.
+
+        @param edge: The edge to add.
+        @type edge: L{Edge}
+        """
+        try:
+            assert isinstance(edge, Edge)
+            assert all([vertex in self.vertices for vertex in edge])
+            assert (not self.directed and not edge.head) \
+                or (self.directed and edge.head)
+        except AssertionError:
+            raise ValueError('invalid edge %s' % edge)
+        self._edges.add(edge)
+
+    def remove_edge(self, edge):
+        """\
+        Remove an edge from this hypergraph.
+
+        @param edge: The edge to add.
+        @type edge: L{Edge}
+        """
+        self._edges.remove(edge)
+
     @property
     def directed(self):
         return self._directed
@@ -125,6 +175,22 @@ class Hypergraph(object):
         @type k: C{int}
         """
         return all([len(edge) == k for edge in self.edges])
+
+    def adjacent(self, u, v):
+        """\
+        Return whether two vertices are adjacent (directly connected by an
+        edge).
+
+        @param u: The first vertex.
+        @type u: C{object}
+        @param v: The second vertex.
+        @type v: C{object}
+        """
+        if self.directed:
+            return Edge([u, v], u) in self.edges \
+                or Edge([u, v], v) in self.edges
+        else:
+            return Edge([u, v]) in self.edges
 
 
 class Graph(Hypergraph):
