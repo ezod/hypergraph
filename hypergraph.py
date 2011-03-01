@@ -86,7 +86,7 @@ class Hypergraph(object):
             for edge in edges:
                 assert isinstance(edge, Edge)
                 assert all([vertex in vertices for vertex in edge])
-                assert not directed or edge.head
+                assert not any[directed, edge.head] or all[directed, edge.head]
                 try:
                     self._weights[edge] = float(weights[edge])
                 except KeyError:
