@@ -90,7 +90,7 @@ class Hypergraph(object):
         except (AttributeError, AssertionError):
             raise TypeError('vertices must be immutable')
         self._vertices = vertices
-        self._weights = {}
+        self.weights = {}
         try:
             for edge in edges:
                 assert isinstance(edge, Edge)
@@ -98,9 +98,9 @@ class Hypergraph(object):
                 assert (not directed and not edge.head) \
                     or (directed and edge.head)
                 try:
-                    self._weights[edge] = float(weights[edge])
+                    self.weights[edge] = float(weights[edge])
                 except KeyError:
-                    self._weights[edge] = 1.0
+                    self.weights[edge] = 1.0
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
         self._edges = edges
@@ -127,7 +127,7 @@ class Hypergraph(object):
         """
         for edge in self.edges():
             if vertex in edge:
-                self._edges.remove(edge)
+                self.remove_edge(edge)
         self._vertices.remove(vertex)
 
     def add_edge(self, edge, weight=1.0):
@@ -147,7 +147,7 @@ class Hypergraph(object):
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
         self._edges.add(edge)
-        self._weights[edge] = weight
+        self.weights[edge] = weight
 
     def remove_edge(self, edge):
         """\
@@ -156,6 +156,7 @@ class Hypergraph(object):
         @param edge: The edge to add.
         @type edge: L{Edge}
         """
+        del self.weights[edge]
         self._edges.remove(edge)
 
     @property
@@ -169,17 +170,6 @@ class Hypergraph(object):
     @property
     def edges(self):
         return self._edges
-
-    def weight(self, edge):
-        """\
-        Return the weight of a given edge.
-
-        @param edge: The edge.
-        @type edge: L{Edge}
-        @return: The weight of the edge.
-        @rtype: C{float}
-        """
-        return self._weights[edge]
 
     def uniform(self, k):
         """\
