@@ -194,11 +194,8 @@ class Hypergraph(object):
         @return: Adjacency.
         @rtype: C{bool}
         """
-        if self.directed:
-            return Edge([u, v], u) in self.edges \
-                or Edge([u, v], v) in self.edges
-        else:
-            return Edge([u, v]) in self.edges
+        # TODO: should this check for edge direction?
+        return any([(u in edge and v in edge) for edge in self.edges])
 
     def neighbors(self, vertex):
         """\
