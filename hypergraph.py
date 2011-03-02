@@ -74,6 +74,15 @@ class Hypergraph(object):
     def __init__(self, vertices=set(), edges=set(), weights={}, directed=False):
         """\
         Constructor.
+
+        @param vertices: Initial set of vertices.
+        @type vertices: C{set}
+        @param edges: Initial set of edges.
+        @type edges: C{set}
+        @param weights: Initial weight relation.
+        @type weights: C{dict}
+        @param directed: Directedness of this hypergraph.
+        @type directed: C{bool}
         """
         self._directed = directed
         try:
@@ -121,12 +130,14 @@ class Hypergraph(object):
                 self._edges.remove(edge)
         self._vertices.remove(vertex)
 
-    def add_edge(self, edge):
+    def add_edge(self, edge, weight=1.0):
         """\
         Add an edge to this hypergraph.
 
         @param edge: The edge to add.
         @type edge: L{Edge}
+        @param weight: The weight of the edge.
+        @type weight: C{float}
         """
         try:
             assert isinstance(edge, Edge)
@@ -136,6 +147,7 @@ class Hypergraph(object):
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
         self._edges.add(edge)
+        self._weights[edge] = weight
 
     def remove_edge(self, edge):
         """\
@@ -164,6 +176,8 @@ class Hypergraph(object):
 
         @param edge: The edge.
         @type edge: L{Edge}
+        @return: The weight of the edge.
+        @rtype: C{float}
         """
         return self._weights[edge]
 
@@ -173,6 +187,8 @@ class Hypergraph(object):
 
         @param k: The value of k.
         @type k: C{int}
+        @return: Uniformity.
+        @rtype: C{bool}
         """
         return all([len(edge) == k for edge in self.edges])
 
@@ -185,6 +201,8 @@ class Hypergraph(object):
         @type u: C{object}
         @param v: The second vertex.
         @type v: C{object}
+        @return: Adjacency.
+        @rtype: C{bool}
         """
         if self.directed:
             return Edge([u, v], u) in self.edges \
@@ -211,6 +229,15 @@ class Graph(Hypergraph):
     def __init__(self, vertices=set(), edges=set(), weights={}, directed=False):
         """\
         Constructor.
+
+        @param vertices: Initial set of vertices.
+        @type vertices: C{set}
+        @param edges: Initial set of edges.
+        @type edges: C{set}
+        @param weights: Initial weight relation.
+        @type weights: C{dict}
+        @param directed: Directedness of this graph.
+        @type directed: C{bool}
         """
         try:
             assert all([len(edge) == 2 for edge in edges])
