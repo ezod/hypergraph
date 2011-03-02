@@ -209,7 +209,24 @@ class Hypergraph(object):
         @return: The set of vertices adjacent to the vertex.
         @rtype: C{set}
         """
-        return set([v for v in self.vertices() if self.adjacent(vertex, v)])
+        return set([v for v in self.vertices if self.adjacent(vertex, v)])
+
+    def degree(self, vertex):
+        """\
+        Return the weighted degree of the given vertex. If this is a directed
+        hypergraph, return the weighted indegree.
+
+        @param vertex: The vertex.
+        @type vertex: C{object}
+        @return: Weighted degree of the vertex.
+        @rtype: C{float}
+        """
+        if self.directed:
+            return sum([self.weights[edge] for edge in self.edges \
+                if edge.head is vertex])
+        else:
+            return sum([self.weights[edge] for edge in self.edges \
+                if vertex in edge])
 
 
 class Graph(Hypergraph):
