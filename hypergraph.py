@@ -63,8 +63,6 @@ class Edge(frozenset):
         else:
             return super(Edge, self).__repr__()
 
-    __str__ = __repr__
-
     @property
     def head(self):
         return self._head
@@ -107,6 +105,14 @@ class Hypergraph(object):
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
         self._edges = copy(edges)
+
+    def __repr__(self):
+        """\
+        Canonical string representation.
+        """
+        return '%s(vertices=%s, edges=%s, weights=%s, directed=%s)' % \
+            (self.__class__.__name__, self.vertices, self.edges, self.weights,
+             self.directed)
 
     def add_vertex(self, vertex):
         """\
