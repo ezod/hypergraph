@@ -7,6 +7,9 @@ Python module for graphs and hypergraphs.
 @license: GPL-3
 """
 
+from copy import copy
+
+
 class Edge(frozenset):
     """\
     Edge class.
@@ -89,7 +92,7 @@ class Hypergraph(object):
             assert all([vertex.__hash__ for vertex in vertices])
         except (AttributeError, AssertionError):
             raise TypeError('vertices must be immutable')
-        self._vertices = vertices
+        self._vertices = copy(vertices)
         self.weights = {}
         try:
             for edge in edges:
@@ -103,7 +106,7 @@ class Hypergraph(object):
                     self.weights[edge] = 1.0
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
-        self._edges = edges
+        self._edges = copy(edges)
 
     def add_vertex(self, vertex):
         """\
