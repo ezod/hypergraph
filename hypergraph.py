@@ -215,7 +215,8 @@ class Hypergraph(object):
         @return: The set of vertices adjacent to the vertex.
         @rtype: C{set}
         """
-        return set([v for v in self.vertices if self.adjacent(vertex, v)])
+        return set([v for v in self.vertices if self.adjacent(vertex, v)]) \
+            - set([vertex])
 
     def degree(self, vertex):
         """\
