@@ -8,7 +8,7 @@ Python module for graphs and hypergraphs.
 """
 
 from copy import copy
-from random import randint, sample
+from random import sample
 
 
 class Edge(frozenset):
