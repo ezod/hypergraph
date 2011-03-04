@@ -272,17 +272,25 @@ class Graph(Hypergraph):
 
 def minimum_maximum_indegree(H):
     """\
-    Find the minimum maximum indegree orientation of an unweighted hypergraph.
+    Find a minimum maximum indegree orientation of an unweighted hypergraph.
+    Adapted from a graph algorithm by Asahiro et al. for finding a minimum
+    maximum outdegree orientation.
+
+    Y. Asahiro, E. Miyano, H. Ono, and K. Zenmyo, "Graph Orientation Algorithms
+    To Minimize the Maximum Outdegree," Int. J. Foundations of Computer Science,
+    vol. 18, pp. 197-215, 2007.
     
     @param H: The input unweighted hypergraph.
     @type H: L{Hypergraph}
+    @return: A minimum maximum indegree orientation of the hypergraph.
+    @rtype: L{Hypergraph}
     """
-    assert not H.directed
     assert all([H.weights[edge] == 1.0 for edge in H.edges])
     def find_reducing_path(L, D, u):
         """\
         Find a directed hyperpath which, if reversed, reduces the indegree of
-        the specified vertex.
+        the specified vertex. This replaces Step 3 of Asahiro et al.'s Reverse
+        algorithm.
 
         @param L: The input directed hypergraph.
         @type L: L{Hypergraph}
