@@ -219,23 +219,52 @@ class Hypergraph(object):
         return set([v for v in self.vertices if self.adjacent(vertex, v)]) \
             - set([vertex])
 
-    def degree(self, vertex):
+    def degree(self, vertex, weighted=True):
         """\
-        Return the weighted degree of the given vertex. If this is a directed
-        hypergraph, return the weighted indegree.
+        Return the (weighted) degree of the given vertex.
 
         @param vertex: The vertex.
         @type vertex: C{object}
-        @return: Weighted degree of the vertex.
+        @param weighted: Return the weighted degree if true.
+        @type weighted: C{bool}
+        @return: Degree of the vertex.
         @rtype: C{float}
         """
-        if self.directed:
-            return sum([self.weights[edge] for edge in self.edges \
-                if edge.head is vertex])
-        else:
-            return sum([self.weights[edge] for edge in self.edges \
-                if vertex in edge])
+        return sum([weighted and self.weights[edge] or 1 for edge \
+            in self.edges if vertex in edge])
 
+    def indegree(self, vertex, weighted=True):
+        """\
+        Return the (weighted) indegree of the given vertex.
+
+        @param vertex: The vertex.
+        @type vertex: C{object}
+        @param weighted: Return the weighted indegree if true.
+        @type weighted: C{bool}
+        @return: Indegree of the vertex.
+        @rtype: C{float}
+        """
+        if not self.directed:
+            return self.degree(vertex, weighted)
+        return sum([weighted and self.weights[edge] or 1 for edge \
+            in self.edges if edge.head is vertex])
+        
+    def outdegree(self, vertex, weighted=True):
+        """\
+        Return the (weighted) outdegree of the given vertex.
+
+        @param vertex: The vertex.
+        @type vertex: C{object}
+        @param weighted: Return the weighted outdegree if true.
+        @type weighted: C{bool}
+        @return: Outdegree of the vertex.
+        @rtype: C{float}
+        """
+        if not self.directed:
+            return self.degree(vertex, weighted)
+        return sum([weighted and self.weights[edge] or 1 for edge \
+            in self.edges if vertex in edge and edge.head is not vertex])
+        
 
 class Graph(Hypergraph):
     """\
@@ -285,7 +314,6 @@ def minimum_maximum_indegree(H):
     @return: A minimum maximum indegree orientation of the hypergraph.
     @rtype: L{Hypergraph}
     """
-    assert all([H.weights[edge] == 1.0 for edge in H.edges])
     def find_reducing_path(L, D, u):
         """\
         Find a directed hyperpath which, if reversed, reduces the indegree of
@@ -325,7 +353,7 @@ def minimum_maximum_indegree(H):
         L.add_edge(Edge(edge, head=sample(edge, 1)[0]))
     while True:
         # compute the indegree of each vertex in L
-        degrees = dict((v, int(L.degree(v))) for v in L.vertices)
+        degrees = dict((v, L.indegree(v, weighted=False)) for v in L.vertices)
         # find the vertex with maximum indegree
         degrees_rev = dict(map(lambda v: (v[1], v[0]), degrees.items()))
         vmax = degrees_rev[max(degrees_rev.keys())]
