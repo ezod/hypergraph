@@ -299,7 +299,43 @@ class Graph(Hypergraph):
         return k == 2
 
 
-def minimum_maximum_indegree(H):
+### MINIMUM INDEGREE ORIENTATION ALGORITHMS ####################################
+
+def _find_reducing_path(L, D, u):
+    """\
+    Find a directed hyperpath which, if reversed, reduces the indegree of
+    the specified vertex, without increasing the degree of any other vertices.
+
+    @param L: The input directed hypergraph.
+    @type L: L{Hypergraph}
+    @param D: A dictionary relating vertices to their indegrees.
+    @type D: C{dict}
+    @param u: The vertex.
+    @type u: C{object}
+    """
+    # generate a set of possible endpoints for the path
+    targets = [v for v in D.keys() if D[v] < D[u] - 1]
+    path = []
+    # initialize the breadth-first search
+    marked = set([u])
+    Q = [(u, [])]
+    # breadth-first search for a directed path to an endpoint
+    while Q:
+        v, path = Q.pop()
+        for edge in [edge for edge in L.edges if edge.head is v]:
+            for w in edge:
+                if w in marked:
+                    continue
+                elif w in targets:
+                    path.append((edge, w))
+                    return path
+                else:
+                    marked.add(w)
+                    Q.append((w, path + [(edge, w)]))
+    return None
+
+
+def minimum_maximum_indegree_orientation(H):
     """\
     Find a minimum maximum indegree orientation of an unweighted hypergraph.
     Adapted from a graph algorithm by Asahiro et al. for finding a minimum
@@ -314,39 +350,6 @@ def minimum_maximum_indegree(H):
     @return: A minimum maximum indegree orientation of the hypergraph.
     @rtype: L{Hypergraph}
     """
-    def find_reducing_path(L, D, u):
-        """\
-        Find a directed hyperpath which, if reversed, reduces the indegree of
-        the specified vertex. This replaces Step 3 of Asahiro et al.'s Reverse
-        algorithm.
-
-        @param L: The input directed hypergraph.
-        @type L: L{Hypergraph}
-        @param D: A dictionary relating vertices to their indegrees.
-        @type D: C{dict}
-        @param u: The vertex.
-        @type u: C{object}
-        """
-        # generate a set of possible endpoints for the path
-        targets = [v for v in D.keys() if D[v] < D[u] - 1]
-        # initialize the breadth-first search
-        marked = set([u])
-        Q = [(u, [])]
-        # breadth-first search for a directed path to an endpoint
-        while Q:
-            v, path = Q.pop()
-            for edge in [edge for edge in L.edges if edge.head is v]:
-                for w in edge:
-                    if w in marked:
-                        continue
-                    elif w in targets:
-                        path.append((edge, w))
-                        return path
-                    else:
-                        marked.add(w)
-                        Q.append((w, path + [(edge, w)]))
-        return None
-
     # generate L, an arbitrary orientation of H
     L = Hypergraph(vertices=H.vertices, directed=True)
     for edge in H.edges:
@@ -358,7 +361,7 @@ def minimum_maximum_indegree(H):
         degrees_rev = dict(map(lambda v: (v[1], v[0]), degrees.items()))
         vmax = degrees_rev[max(degrees_rev.keys())]
         # find a directed path which can reduce the degree of vmax
-        path = find_reducing_path(L, degrees, vmax)
+        path = _find_reducing_path(L, degrees, vmax)
         # if no such path exists, return L
         if not path:
             break
@@ -366,4 +369,38 @@ def minimum_maximum_indegree(H):
         for edge, vertex in path:
             L.remove_edge(edge)
             L.add_edge(Edge(edge, head=vertex))
+    return L
+
+
+def minimum_indegree_orientation(H):
+    """\
+    Find a minimum indegree orientation of an unweighted hypergraph (that is,
+    an orientation which minimizes the indegree of all vertices). Derived from
+    the minimum maximum indegree orientation algorithm.
+
+    @param H: The input unweighted hypergraph.
+    @type H: L{Hypergraph}
+    @return: A minimum indegree orientation of the hypergraph.
+    @rtype: L{Hypergraph}
+    """
+    # generate L, an arbitrary orientation of H
+    L = Hypergraph(vertices=H.vertices, directed=True)
+    for edge in H.edges:
+        L.add_edge(Edge(edge, head=sample(edge, 1)[0]))
+    reducing = True
+    while reducing:
+        # compute the indegree of each vertex in L
+        degrees = dict((v, L.indegree(v, weighted=False)) for v in L.vertices)
+        reducing = False
+        for v in L.vertices:
+            # find a directed path which can reduce the degree of v
+            path = _find_reducing_path(L, degrees, v)
+            if not path:
+                continue
+            # reverse the directed path and continue
+            for edge, vertex in path:
+                L.remove_edge(edge)
+                L.add_edge(Edge(edge, head=vertex))
+            reducing = True
+            break
     return L
