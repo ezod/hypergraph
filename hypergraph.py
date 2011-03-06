@@ -8,7 +8,6 @@ Python module for graphs and hypergraphs.
 """
 
 from copy import copy
-from random import sample
 
 
 class Edge(frozenset):
@@ -53,6 +52,12 @@ class Edge(frozenset):
         """
         return super(Edge, self).__hash__() + \
             (self.head and self.head.__hash__() or 0)
+
+    def __eq__(self, other):
+        """\
+        Equality operator.
+        """
+        return frozenset.__eq__(self, other) and self.head is other.head
 
     def __repr__(self):
         """\
@@ -106,6 +111,13 @@ class Hypergraph(object):
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
         self._edges = copy(edges)
+
+    def __eq__(self, other):
+        """\
+        Equality operator.
+        """
+        return self.vertices == other.vertices and self.edges == other.edges \
+            and self.weights == other.weights
 
     def __repr__(self):
         """\
@@ -304,7 +316,8 @@ class Graph(Hypergraph):
 def _find_reducing_path(L, D, u):
     """\
     Find a directed hyperpath which, if reversed, reduces the indegree of
-    the specified vertex, without increasing the degree of any other vertices.
+    the specified vertex, without increasing the degree of any other vertex
+    above the original indegree.
 
     @param L: The input directed hypergraph.
     @type L: L{Hypergraph}
@@ -313,8 +326,6 @@ def _find_reducing_path(L, D, u):
     @param u: The vertex.
     @type u: C{object}
     """
-    # generate a set of possible endpoints for the path
-    targets = [v for v in D.keys() if D[v] < D[u] - 1]
     path = []
     # initialize the breadth-first search
     marked = set([u])
@@ -326,10 +337,10 @@ def _find_reducing_path(L, D, u):
             for w in edge:
                 if w in marked:
                     continue
-                elif w in targets:
+                elif D[w] < D[u] - 1:
                     path.append((edge, w))
                     return path
-                else:
+                elif D[w] <= D[u]:
                     marked.add(w)
                     Q.append((w, path + [(edge, w)]))
     return None
@@ -350,6 +361,7 @@ def minimum_maximum_indegree_orientation(H):
     @return: A minimum maximum indegree orientation of the hypergraph.
     @rtype: L{Hypergraph}
     """
+    from random import sample
     # generate L, an arbitrary orientation of H
     L = Hypergraph(vertices=H.vertices, directed=True)
     for edge in H.edges:
@@ -369,38 +381,4 @@ def minimum_maximum_indegree_orientation(H):
         for edge, vertex in path:
             L.remove_edge(edge)
             L.add_edge(Edge(edge, head=vertex))
-    return L
-
-
-def minimum_indegree_orientation(H):
-    """\
-    Find a minimum indegree orientation of an unweighted hypergraph (that is,
-    an orientation which minimizes the indegree of all vertices). Derived from
-    the minimum maximum indegree orientation algorithm.
-
-    @param H: The input unweighted hypergraph.
-    @type H: L{Hypergraph}
-    @return: A minimum indegree orientation of the hypergraph.
-    @rtype: L{Hypergraph}
-    """
-    # generate L, an arbitrary orientation of H
-    L = Hypergraph(vertices=H.vertices, directed=True)
-    for edge in H.edges:
-        L.add_edge(Edge(edge, head=sample(edge, 1)[0]))
-    reducing = True
-    while reducing:
-        # compute the indegree of each vertex in L
-        degrees = dict((v, L.indegree(v, weighted=False)) for v in L.vertices)
-        reducing = False
-        for v in L.vertices:
-            # find a directed path which can reduce the degree of v
-            path = _find_reducing_path(L, degrees, v)
-            if not path:
-                continue
-            # reverse the directed path and continue
-            for edge, vertex in path:
-                L.remove_edge(edge)
-                L.add_edge(Edge(edge, head=vertex))
-            reducing = True
-            break
     return L
