@@ -7,9 +7,6 @@ Hypergraph - core classes.
 @license: LGPL-3
 """
 
-from copy import copy
-
-
 class Edge(frozenset):
     """\
     Edge class.
@@ -96,7 +93,7 @@ class Hypergraph(object):
             assert all([vertex.__hash__ for vertex in vertices])
         except (AttributeError, AssertionError):
             raise TypeError('vertices must be immutable')
-        self._vertices = copy(vertices)
+        self._vertices = set(vertices)
         self.weights = {}
         try:
             for edge in edges:
@@ -110,7 +107,7 @@ class Hypergraph(object):
                     self.weights[edge] = 1.0
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
-        self._edges = copy(edges)
+        self._edges = set(edges)
 
     def __eq__(self, other):
         """\
