@@ -61,7 +61,7 @@ class Edge(frozenset):
         Canonical string representation.
         """
         if self.head:
-            return '%s(%s, %s)' % \
+            return '%s(%s, \'%s\')' % \
                 (self.__class__.__name__, list(self), self.head)
         else:
             return super(Edge, self).__repr__()
@@ -256,7 +256,7 @@ class Hypergraph(object):
         if not self.directed:
             return self.degree(vertex, weighted)
         return sum([weighted and self.weights[edge] or 1 for edge \
-            in self.edges if edge.head is vertex])
+            in self.edges if edge.head == vertex])
         
     def outdegree(self, vertex, weighted=True):
         """\
@@ -272,7 +272,7 @@ class Hypergraph(object):
         if not self.directed:
             return self.degree(vertex, weighted)
         return sum([weighted and self.weights[edge] or 1 for edge \
-            in self.edges if vertex in edge and edge.head is not vertex])
+            in self.edges if vertex in edge and edge.head != vertex])
         
 
 class Graph(Hypergraph):
