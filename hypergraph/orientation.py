@@ -10,6 +10,24 @@ Hypergraph - orientation algorithms.
 from .core import Hypergraph, Edge
 
 
+def random_orientation(H):
+    """\
+    Return a random orientation of a hypergraph.
+
+    @param H: The input hypergraph.
+    @type H: L{Hypergraph}
+    @return: A random orientation of the hypergraph.
+    @rtype: L{Hypergraph}
+    """
+    from random import sample
+    from copy import copy
+    L = Hypergraph(vertices=H.vertices, directed=True)
+    for edge in H.edges:
+        L.add_edge(Edge(edge, head=sample(edge, 1)[0]))
+    L.weights = copy(H.weights)
+    return L
+
+
 def minimum_maximum_indegree_orientation(H):
     """\
     Find a minimum maximum indegree orientation of an unweighted hypergraph.
