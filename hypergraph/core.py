@@ -68,6 +68,9 @@ class Edge(frozenset):
 
     @property
     def head(self):
+        """\
+        Edge head.
+        """
         return self._head
 
 
@@ -75,7 +78,7 @@ class Hypergraph(object):
     """\
     Hypergraph class.
     """
-    def __init__(self, vertices=set(), edges=set(), weights={}, directed=False):
+    def __init__(self, vertices=None, edges=None, weights=None, directed=False):
         """\
         Constructor.
 
@@ -93,7 +96,7 @@ class Hypergraph(object):
             assert all([vertex.__hash__ for vertex in vertices])
         except (AttributeError, AssertionError):
             raise TypeError('vertices must be immutable')
-        self._vertices = set(vertices)
+        self._vertices = vertices and set(vertices) or set()
         self.weights = {}
         try:
             for edge in edges:
@@ -103,11 +106,13 @@ class Hypergraph(object):
                     or (directed and edge.head)
                 try:
                     self.weights[edge] = float(weights[edge])
-                except KeyError:
+                except (KeyError, TypeError):
                     self.weights[edge] = 1.0
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
-        self._edges = set(edges)
+        except TypeError:
+            pass
+        self._edges = edges and set(edges) or set()
 
     def __eq__(self, other):
         """\
@@ -145,7 +150,7 @@ class Hypergraph(object):
         @param vertex: The vertex object to remove.
         @type vertex: C{object}
         """
-        for edge in self.edges():
+        for edge in self.edges:
             if vertex in edge:
                 self.remove_edge(edge)
         self._vertices.remove(vertex)
@@ -181,14 +186,23 @@ class Hypergraph(object):
 
     @property
     def directed(self):
+        """\
+        Directedness of the hypergraph.
+        """
         return self._directed
 
     @property
     def vertices(self):
+        """\
+        Vertex set of the hypergraph.
+        """
         return self._vertices
 
     @property
     def edges(self):
+        """\
+        Edge set of the hypergraph.
+        """
         return self._edges
 
     def uniform(self, k):
@@ -202,20 +216,24 @@ class Hypergraph(object):
         """
         return all([len(edge) == k for edge in self.edges])
 
-    def adjacent(self, u, v):
+    def adjacent(self, tail, head):
         """\
         Return whether two vertices are adjacent (directly connected by an
-        edge).
+        edge). If this hypergraph is directed, the edge must be directed into
+        the second vertex.
 
-        @param u: The first vertex.
-        @type u: C{object}
-        @param v: The second vertex.
-        @type v: C{object}
+        @param tail: The first vertex.
+        @type tail: C{object}
+        @param head: The second vertex.
+        @type head: C{object}
         @return: Adjacency.
         @rtype: C{bool}
         """
-        # TODO: should this check for edge direction?
-        return any([(u in edge and v in edge) for edge in self.edges])
+        if self.directed:
+            return any([(tail in edge and head in edge and edge.head == head) \
+                for edge in self.edges])
+        else:
+            return any([(tail in edge and head in edge) for edge in self.edges])
 
     def neighbors(self, vertex):
         """\
@@ -280,7 +298,7 @@ class Graph(Hypergraph):
     """\
     Graph (2-uniform hypergraph) class.
     """
-    def __init__(self, vertices=set(), edges=set(), weights={}, directed=False):
+    def __init__(self, vertices=None, edges=None, weights=None, directed=False):
         """\
         Constructor.
 
@@ -297,6 +315,8 @@ class Graph(Hypergraph):
             assert all([len(edge) == 2 for edge in edges])
         except AssertionError:
             raise ValueError('edges must have exactly two vertices')
+        except TypeError:
+            pass
         super(Graph, self).__init__(vertices, edges, weights, directed)
 
     def uniform(self, k):
