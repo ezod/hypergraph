@@ -114,7 +114,8 @@ class Hypergraph(object):
         Equality operator.
         """
         return self.vertices == other.vertices and self.edges == other.edges \
-            and self.weights == other.weights
+            and all([abs(self.weights[edge] - other.weights[edge]) < 1e-4 \
+            for edge in self.edges])
 
     def __repr__(self):
         """\
