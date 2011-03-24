@@ -7,6 +7,9 @@ Hypergraph - orientation algorithms.
 @license: LGPL-3
 """
 
+from random import sample
+from copy import copy
+
 from .core import Hypergraph, Edge
 
 
@@ -19,8 +22,6 @@ def random_orientation(H):
     @return: A random orientation of the hypergraph.
     @rtype: L{Hypergraph}
     """
-    from random import sample
-    from copy import copy
     L = Hypergraph(vertices=H.vertices, directed=True)
     for edge in H.edges:
         L.add_edge(Edge(edge, head=sample(edge, 1)[0]))
@@ -61,7 +62,6 @@ def minimum_maximum_indegree_orientation(H):
                         Q.append((w, path + [(edge, w)]))
         return None
 
-    from random import sample
     # generate L, an arbitrary orientation of H
     L = Hypergraph(vertices=H.vertices, directed=True)
     for edge in H.edges:
