@@ -73,6 +73,13 @@ class Edge(frozenset):
         """
         return self._head
 
+    @property
+    def tail(self):
+        """\
+        Edge tail set.
+        """
+        return set(self) - set([self._head])
+
 
 class Hypergraph(object):
     """\
