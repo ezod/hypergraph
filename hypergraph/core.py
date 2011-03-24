@@ -150,7 +150,8 @@ class Hypergraph(object):
         @param vertex: The vertex object to remove.
         @type vertex: C{object}
         """
-        for edge in self.edges:
+        edges = set(self.edges)
+        for edge in edges:
             if vertex in edge:
                 self.remove_edge(edge)
         self._vertices.remove(vertex)
