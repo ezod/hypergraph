@@ -7,6 +7,8 @@ Hypergraph - path algorithms.
 @license: LGPL-3
 """
 
+from copy import deepcopy
+
 from .core import Edge
 
 
@@ -20,6 +22,7 @@ def floyd_warshall(G):
     @return: A two-dimensional dictionary of pairwise shortest path lengths.
     @rtype: C{dict} of C{dict} of C{float}
     """
+    assert G.uniform(2)
     path = {}
     for u in G.vertices:
         path[u] = {}
@@ -36,3 +39,22 @@ def floyd_warshall(G):
             for v in G.vertices:
                 path[u][v] = min(path[u][v], path[u][w] + path[w][v])
     return path
+
+
+def shortest_path_subgraph(G):
+    """\
+    Return the shortest path subgraph of a graph, which contains only strong
+    edges (edges which form part of a shortest path between some pair of
+    vertices).
+
+    @param G: The input graph.
+    @type G: L{Graph}
+    @return: The shortest path subgraph.
+    @rtype: L{Graph}
+    """
+    S = deepcopy(G)
+    path = floyd_warshall(S)
+    for edge in S.edges:
+        if S.weights[edge] > path[edge.tail.pop()][edge.head]:
+            S.remove_edge(edge)
+    return S
