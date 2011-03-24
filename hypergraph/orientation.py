@@ -110,13 +110,13 @@ def minimum_maximum_weighted_indegree_orientation(H):
     accepted = True
     while accepted:
         accepted = False
-        mmax = max([(L.indegree(v), v) for v in L.vertices])[1]
-        Jmax = set([edge for edge in L.edges if edge.head is mmax])
-        Emax = set([(i, j) for i in L.vertices - set([mmax]) \
-            for j in Jmax if i in j])
-        while Emax:
-            vertex, edge = Emax.pop()
-            if L.indegree(vertex) + 1e-4 < L.indegree(mmax) \
+        vmax = max([(L.indegree(v), v) for v in L.vertices])[1]
+        Emax = set([edge for edge in L.edges if edge.head is vmax])
+        R = set([(v, emax) for v in L.vertices - set([vmax]) \
+            for emax in Emax if v in emax])
+        while R:
+            vertex, edge = R.pop()
+            if L.indegree(vertex) + 1e-4 < L.indegree(vmax) \
                 - H.weights[Edge(edge)]:
                 L.remove_edge(edge)
                 L.add_edge(Edge(edge, head=vertex),
@@ -127,28 +127,28 @@ def minimum_maximum_weighted_indegree_orientation(H):
     accepted = True
     while accepted:
         accepted = False
-        M = [vertex for vertex in L.vertices]
-        M.sort(cmp=lambda a, b: L.indegree(a) < L.indegree(b) and -1 \
+        V = [vertex for vertex in L.vertices]
+        V.sort(cmp=lambda a, b: L.indegree(a) < L.indegree(b) and -1 \
             or L.indegree(a) > L.indegree(b) and 1 or 0)
         try:
-            for m1 in reversed(M):
-                for m2 in M:
-                    if m2 is m1:
+            for v1 in reversed(V):
+                for v2 in V:
+                    if v2 is v1:
                         break
-                    for j in [edge for edge in L.edges \
-                    if edge.head is m1 and m2 in edge]:
-                        for k in [edge for edge in L.edges \
-                        if edge.head is m2 and m1 in edge]:
-                            if max(L.indegree(m1) - H.weights[Edge(j)] \
-                                + H.weights[Edge(k)], L.indegree(m2) \
-                                - H.weights[Edge(k)] + H.weights[Edge(j)]) \
-                                + 1e-4 < max(L.indegree(m1), L.indegree(m2)):
-                                L.remove_edge(j)
-                                L.remove_edge(k)
-                                L.add_edge(Edge(j, head=m2),
-                                    weight=H.weights[Edge(j)])
-                                L.add_edge(Edge(k, head=m1),
-                                    weight=H.weights[Edge(k)])
+                    for e1 in [edge for edge in L.edges \
+                    if edge.head is v1 and v2 in edge]:
+                        for e2 in [edge for edge in L.edges \
+                        if edge.head is v2 and v1 in edge]:
+                            if max(L.indegree(v1) - H.weights[Edge(e1)] \
+                                + H.weights[Edge(e2)], L.indegree(v2) \
+                                - H.weights[Edge(e2)] + H.weights[Edge(e1)]) \
+                                + 1e-4 < max(L.indegree(v1), L.indegree(v2)):
+                                L.remove_edge(e1)
+                                L.remove_edge(e2)
+                                L.add_edge(Edge(e1, head=v2),
+                                    weight=H.weights[Edge(e1)])
+                                L.add_edge(Edge(e2, head=v1),
+                                    weight=H.weights[Edge(e2)])
                                 accepted = True
                                 raise Break
         except Break:
