@@ -13,6 +13,7 @@ import unittest
 
 from hypergraph import *
 from hypergraph.orientation import *
+from hypergraph.path import *
 
 
 class TestCore(unittest.TestCase):
