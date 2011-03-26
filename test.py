@@ -99,5 +99,43 @@ class TestCore(unittest.TestCase):
         self.assertEqual(self.D.outdegree('I', weighted=False), 8)
 
 
+class TestPath(unittest.TestCase):
+
+    def setUp(self):
+        V = set([1, 2, 3, 4, 5])
+        self.U = Graph(vertices=V, directed=False)
+        self.D = Graph(vertices=V, directed=True)
+        for G in [self.U, self.D]:
+            G.add_edge(Edge([1, 2], head=(G.directed and 2 or None)), weight=1.25)
+            G.add_edge(Edge([2, 3], head=(G.directed and 3 or None)), weight=1)
+            G.add_edge(Edge([3, 4], head=(G.directed and 4 or None)), weight=1.11)
+            G.add_edge(Edge([4, 5], head=(G.directed and 5 or None)), weight=1.43)
+            G.add_edge(Edge([3, 5], head=(G.directed and 5 or None)), weight=10)
+            G.add_edge(Edge([5, 2], head=(G.directed and 2 or None)), weight=2)
+            G.add_edge(Edge([1, 5], head=(G.directed and 5 or None)), weight=100)
+
+    def test_dijkstra(self):
+        exp = {1: None, 2: 1, 3: 2, 4: 3, 5: 2}
+        act = dijkstra(self.U, 1)
+        self.assertEqual(act, exp)
+        exp = {1: None, 2: 1, 3: 2, 4: 3, 5: 4}
+        act = dijkstra(self.D, 1)
+        self.assertEqual(act, exp)
+
+    def test_shortest_path(self):
+        ep = [1, 2, 5]
+        el = 3.25
+        act = shortest_path(self.U, 1, 5)
+        self.assertEqual(act, (ep, el))
+        ep = [1, 2, 3, 4, 5]
+        el = 4.79
+        act = shortest_path(self.D, 1, 5)
+        self.assertEqual(act, (ep, el))
+
+    def test_floyd_warshall(self):
+        self.assertEqual(floyd_warshall(self.U)[1][5], 3.25)
+        self.assertEqual(floyd_warshall(self.D)[1][5], 4.79)
+
+
 if __name__ == '__main__':
     unittest.main()
