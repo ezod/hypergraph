@@ -12,6 +12,67 @@ from copy import deepcopy
 from .core import Edge
 
 
+def dijkstra(G, start):
+    """\
+    Dijkstra's algorithm for finding the shortest paths from the start vertex to
+    all other vertices.
+
+    @param start: The start vertex.
+    @type start: C{object}
+    @return: The "previous" array of Dijkstra's algoritm.
+    @rtype: C{dict}
+    """
+    try:
+        assert G.uniform(2)
+    except AssertionError:
+        raise ValueError('function can only be applied to 2-uniform graphs')
+    dist = {}
+    prev = {}
+    Q = set(G.vertices)
+    for vertex in G.vertices:
+        dist[vertex] = float('inf')
+        prev[vertex] = None
+    dist[start] = 0.0
+    while Q:
+        u = None
+        for vertex in Q:
+            if not u or dist[vertex] < dist[u]:
+                u = vertex
+        Q.remove(u)
+        for vertex in G.neighbors(u):
+            alt = dist[u] + G.weights[Edge([u, vertex],
+                head=(G.directed and vertex or None))]
+            if alt < dist[vertex]:
+                dist[vertex] = alt
+                prev[vertex] = u
+    return prev
+
+
+def shortest_path(G, start, end):
+    """\
+    Find the shortest path from the start vertex to the end vertex using
+    Dijkstra's algorithm.
+
+    @param start: The start vertex.
+    @type start: C{object}
+    @param end: The end vertex.
+    @type end: C{object}
+    @return: Shortest path vertex list and total distance.
+    @rtype: C{list}, C{float}
+    """
+    prev = dijkstra(G, start)
+    path = []
+    u = end
+    dist = 0.0
+    while u in prev.keys():
+        path.insert(0, u)
+        if prev[u]:
+            dist += G.weights[Edge([prev[u], u],
+                head=(G.directed and u or None))]
+        u = prev[u]
+    return path, dist
+
+
 def floyd_warshall(G):
     """\
     Floyd-Warshall algorithm for finding the shortest path lengths between all
@@ -22,7 +83,10 @@ def floyd_warshall(G):
     @return: A two-dimensional dictionary of pairwise shortest path lengths.
     @rtype: C{dict} of C{dict} of C{float}
     """
-    assert G.uniform(2)
+    try:
+        assert G.uniform(2)
+    except AssertionError:
+        raise ValueError('function can only be applied to 2-uniform graphs')
     path = {}
     for u in G.vertices:
         path[u] = {}
@@ -31,7 +95,8 @@ def floyd_warshall(G):
                 path[u][v] = 0.0
                 continue
             try:
-                path[u][v] = G.weights[Edge([u, v])]
+                path[u][v] = G.weights[Edge([u, v],
+                    head=(G.directed and v or None))]
             except KeyError:
                 path[u][v] = float('inf')
     for w in G.vertices:
