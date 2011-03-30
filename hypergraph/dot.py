@@ -21,7 +21,7 @@ def dot_export(G):
     D = pydot.Dot(graph_type=(G.directed and 'digraph' or 'graph'))
     for v in G.vertices:
         D.add_node(pydot.Node(name=str(v), label=str(v)))
-    weighted = all([weight == 1.0 for weight in G.weights.values()])
+    weighted = not all([weight == 1.0 for weight in G.weights.values()])
     for e in G.edges:
         if G.directed:
             tail, head = e.tail.pop(), e.head
