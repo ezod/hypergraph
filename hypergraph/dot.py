@@ -14,8 +14,10 @@ def dot_export(G):
     """\
     Export a graph to PyDot.
 
+    @param G: The graph to export.
+    @type G: L{Graph}
     @return: List of PyDot nodes.
-    @rtype: C{list} of L{pydot.Node}
+    @rtype: C{list} of C{pydot.Node}
     """
     assert G.uniform(2)
     D = pydot.Dot(graph_type=(G.directed and 'digraph' or 'graph'))
