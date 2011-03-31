@@ -228,6 +228,19 @@ class Hypergraph(object):
             k = len(iter(self.edges).next())
         return all([len(edge) == k for edge in self.edges])
 
+    def regular(self, d=None):
+        """\
+        Return whether this is a d-regular hypergraph.
+
+        @param d: The value of d (optional).
+        @type d: C{int}
+        @return: Regularity.
+        @rtype: C{bool}
+        """
+        if d is None:
+            d = self.degree(iter(self.vertices).next())
+        return all([self.degree(vertex) == d for vertex in self.vertices])
+
     def adjacent(self, u, v):
         """\
 
