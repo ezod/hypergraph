@@ -98,12 +98,14 @@ class Hypergraph(object):
         @param directed: Directedness of this hypergraph.
         @type directed: C{bool}
         """
+        vertices = vertices and set(vertices) or set()
+        edges = edges and set(edges) or set()
         self._directed = directed
         try:
             assert all([vertex.__hash__ for vertex in vertices])
         except (AttributeError, AssertionError):
             raise TypeError('vertices must be immutable')
-        self._vertices = vertices and set(vertices) or set()
+        self._vertices = vertices
         self.weights = {}
         try:
             for edge in edges:
@@ -119,7 +121,7 @@ class Hypergraph(object):
             raise ValueError('invalid edge %s' % edge)
         except TypeError:
             pass
-        self._edges = edges and set(edges) or set()
+        self._edges = edges
 
     def __eq__(self, other):
         """\
