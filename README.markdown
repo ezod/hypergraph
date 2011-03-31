@@ -3,7 +3,7 @@
 
 ## Overview
 
-Hypergraph is a Python module for simple graphs and hypergraphs.
+Hypergraph is a Python module for graphs and hypergraphs.
 
 
 ## Requirements

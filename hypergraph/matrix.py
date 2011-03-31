@@ -1,5 +1,5 @@
 """\
-Hypergraph - matrix functions.
+Hypergraph - matrix functions, algebraic and spectral graph theory.
 
 @author: Aaron Mavrinac
 @organization: University of Windsor
@@ -26,25 +26,21 @@ def degree_matrix(H, weighted=True):
         for v in sorted(list(H.vertices))])
 
 
-def adjacency_matrix(G):
+def adjacency_matrix(H):
     """\
     Return the adjacency matrix of a graph. For directed graphs, considers the
     indegree adjacency (incidence).
 
-    @param G: The input graph.
-    @type G: L{Graph}
+    @param H: The input graph.
+    @type H: L{Hypergraph}
     @return: The adjacency matrix.
     @rtype: C{numpy.ndarray}
     """
-    try:
-        assert G.uniform(2)
-    except AssertionError:
-        raise ValueError('function can only be applied to 2-uniform graphs')
-    V = sorted(list(G.vertices))
+    V = sorted(list(H.vertices))
     adjacency = numpy.zeros((len(V), len(V)))
     for u in range(len(V)):
         for v in range(len(V)):
-            adjacency[u][v] = int(G.incident(V[u], V[v]))
+            adjacency[u][v] = int(H.incident(V[u], V[v]))
     return adjacency
 
 
@@ -52,23 +48,39 @@ def incidence_matrix(H):
     """\
     Return the incidence matrix of a hypergraph.
 
-    @param H: The input directed hypergraph.
+    @param H: The input hypergraph.
     @type H: L{Hypergraph}
     @return: The adjacency matrix.
     @rtype: C{numpy.ndarray}
     """
-    try:
-        assert H.directed
-    except AssertionError:
-        raise ValueError('function can only be applied to directed hypergraphs')
     V = sorted(list(H.vertices))
     E = sorted(list(H.edges))
     dV = {}
     for i in range(len(V)):
         dV[V[i]] = i
     incidence = numpy.zeros((len(V), len(E)))
-    for e in range(len(E)):
-        incidence[dV[E[e].head]][e] = 1
-        for v in E[e].tail:
-            incidence[dV[v]][e] = -1
+    if H.directed:
+        for e in range(len(E)):
+            incidence[dV[E[e].head]][e] = 1
+            for v in E[e].tail:
+                incidence[dV[v]][e] = -1
+    else:
+        for e in range(len(E)):
+            for v in E[e]:
+                incidence[dV[v]][e] = 1
     return incidence
+
+
+def laplacian_matrix(H):
+    """\
+    Return the Laplacian matrix of a hypergraph.
+
+    @param H: The input graph.
+    @type H: L{Hypergraph}
+    @return: The Laplacian matrix.
+    @rtype: C{numpy.ndarray}
+    """
+    if H.uniform(2):
+        return degree_matrix(H) - adjacency_matrix(H)
+    else:
+        raise ValueError('Laplacian is not yet defined for non-graphs')
