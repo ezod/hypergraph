@@ -41,3 +41,26 @@ def adjacency_matrix(G):
         for v in range(len(V)):
             adjacency[u][v] = int(G.adjacent(V[u], V[v]))
     return adjacency
+
+
+def incidence_matrix(H):
+    """\
+    Return the incidence matrix of a graph.
+
+    @param H: The input directed hypergraph.
+    @type H: L{Hypergraph}
+    @return: The adjacency matrix.
+    @rtype: C{numpy.ndarray}
+    """
+    assert H.directed
+    V = sorted(list(H.vertices))
+    E = sorted(list(H.edges))
+    dV = {}
+    for i in range(len(V)):
+        dV[V[i]] = i
+    incidence = numpy.zeros((len(V), len(E)))
+    for e in range(len(E)):
+        incidence[dV[E[e].head]][e] = 1
+        for v in E[e].tail:
+            incidence[dV[v]][e] = -1
+    return incidence
