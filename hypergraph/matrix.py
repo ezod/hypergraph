@@ -73,12 +73,16 @@ def laplacian_matrix(H):
     """\
     Return the Laplacian matrix of a hypergraph.
 
+    J. A. Rodriguez, "On the Laplacian Eigenvalues and Metric Parameters of
+    Hypergraphs," Linear and Multilinear Algebra, vol. 50, no. 1, pp. 1-14,
+    2002.
+
+    J. A. Rodriguez, "On the Laplacian Spectrum and Walk-Regular Hypergraphs,"
+    Linear and Multilinear Algebra, vol. 51, no. 3, pp. 285-297, 2003.
+
     @param H: The input graph.
     @type H: L{Hypergraph}
     @return: The Laplacian matrix.
     @rtype: C{numpy.ndarray}
     """
-    if H.uniform(2):
-        return degree_matrix(H) - adjacency_matrix(H)
-    else:
-        raise ValueError('Laplacian is not yet defined for non-graphs')
+    return degree_matrix(H) - adjacency_matrix(H)
