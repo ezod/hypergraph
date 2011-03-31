@@ -64,10 +64,12 @@ class TestCore(unittest.TestCase):
         self.D.add_edge(Edge(['A', 'C', 'B', 'E', 'D', 'F', 'H', 'J'], 'D'), weight=9.601762)
 
     def test_equal_repr(self):
+        self.assertEqual(Hypergraph(), Hypergraph())
+        self.assertEqual(Graph(), Graph())
         G = Hypergraph(vertices=self.U.vertices, edges=self.U.edges, weights=self.U.weights, directed=False)
-        self.assertTrue(G == self.U)
+        self.assertEqual(G, self.U)
         H = eval('%s' % self.U)
-        self.assertTrue(H == self.U)
+        self.assertEqual(H, self.U)
 
     def test_remove_vertex(self):
         self.U.remove_vertex('I')
