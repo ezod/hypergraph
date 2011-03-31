@@ -35,9 +35,9 @@ def minimum_maximum_indegree_orientation(H):
     Adapted from a graph algorithm by Asahiro et al. for finding a minimum
     maximum outdegree orientation.
 
-    Y. Asahiro, E. Miyano, H. Ono, and K. Zenmyo, "Graph Orientation Algorithms
-    To Minimize the Maximum Outdegree," Int. J. Foundations of Computer Science,
-    vol. 18, pp. 197-215, 2007.
+        - Y. Asahiro, E. Miyano, H. Ono, and K. Zenmyo, "Graph Orientation
+          Algorithms To Minimize the Maximum Outdegree," Int. J. Foundations of
+          Computer Science, vol. 18, pp. 197-215, 2007.
     
     @param H: The input unweighted hypergraph.
     @type H: L{Hypergraph}
@@ -91,9 +91,9 @@ def minimum_maximum_weighted_indegree_orientation(H):
     Piersma and Van Dijk for the R||Cmax scheduling problem (which is a superset
     of the P|Mj|Cmax problem, equivalent to MIO).
 
-    N. Piersma and W. Van Dijk, "A Local Search Heuristic for Unrelated Parallel
-    Machine Scheduling with Efficient Neighborhood Search," Mathematical and
-    Computer Modelling, vol. 24, no. 9, pp. 11-19, 1996.
+        - N. Piersma and W. Van Dijk, "A Local Search Heuristic for Unrelated
+          Parallel Machine Scheduling with Efficient Neighborhood Search,"
+          Mathematical and Computer Modelling, vol. 24, no. 9, pp. 11-19, 1996.
 
     @param H: The input hypergraph.
     @type H: L{Hypergraph}
