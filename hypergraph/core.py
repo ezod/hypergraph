@@ -226,35 +226,49 @@ class Hypergraph(object):
         """
         return all([len(edge) == k for edge in self.edges])
 
-    def adjacent(self, tail, head):
+    def adjacent(self, u, v):
         """\
-        Return whether two vertices are adjacent (directly connected by an
-        edge). If this hypergraph is directed, the edge must be directed into
-        the second vertex.
+        Return whether two vertices are adjacent (directly connected by a
+        hyperedge). Does not consider the direction of the hyperedge.
 
-        @param tail: The first vertex.
-        @type tail: C{object}
-        @param head: The second vertex.
-        @type head: C{object}
+        @param u: The first vertex.
+        @type u: C{object}
+        @param v: The second vertex.
+        @type v: C{object}
         @return: Adjacency.
+        @rtype: C{bool}
+        """
+        return any([(u in edge and v in edge) for edge in self.edges])
+
+    def incident(self, tail, head):
+        """\
+        Return whether there exists a directed hyperedge from the tail vertex
+        to the head vertex.
+
+        @param tail: The tail vertex.
+        @type tail: C{object}
+        @param head: The head vertex.
+        @type head: C{object}
+        @return: Incidence.
         @rtype: C{bool}
         """
         if self.directed:
             return any([(tail in edge and head in edge and edge.head == head) \
                 for edge in self.edges])
         else:
-            return any([(tail in edge and head in edge) for edge in self.edges])
+            return self.adjacent(tail, head)
 
     def neighbors(self, vertex):
         """\
-        Return the set of vertices which are adjacent to a given vertex.
+        Return the set of vertices which are adjacent (in an undirected
+        hypergraph) or incident (in a directed hypergraph) to a given vertex.
 
         @param vertex: The vertex.
         @type vertex: C{object}
         @return: The set of vertices adjacent to the vertex.
         @rtype: C{set}
         """
-        return set([v for v in self.vertices if self.adjacent(vertex, v)]) \
+        return set([v for v in self.vertices if self.incident(vertex, v)]) \
             - set([vertex])
 
     def degree(self, vertex, weighted=True):

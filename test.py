@@ -87,9 +87,11 @@ class TestCore(unittest.TestCase):
 
     def test_adjacent(self):
         self.assertTrue(self.U.adjacent('A', 'G'))
-        self.assertFalse(self.D.adjacent('A', 'G'))
-        self.assertTrue(self.D.adjacent('G', 'A'))
-        self.assertTrue(self.D.adjacent('E', 'D'))
+
+    def test_incident(self):
+        self.assertFalse(self.D.incident('A', 'G'))
+        self.assertTrue(self.D.incident('G', 'A'))
+        self.assertTrue(self.D.incident('E', 'D'))
 
     def test_neighbors(self):
         self.assertEqual(self.U.neighbors('I'), set(['A', 'C', 'B', 'E', 'D', 'G', 'F', 'H', 'J']))
