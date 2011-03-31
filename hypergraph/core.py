@@ -215,15 +215,17 @@ class Hypergraph(object):
         """
         return self._edges
 
-    def uniform(self, k):
+    def uniform(self, k=None):
         """\
         Return whether this is a k-uniform hypergraph.
 
-        @param k: The value of k.
+        @param k: The value of k (optional).
         @type k: C{int}
         @return: Uniformity.
         @rtype: C{bool}
         """
+        if k is None:
+            k = len(iter(self.edges).next())
         return all([len(edge) == k for edge in self.edges])
 
     def adjacent(self, u, v):
@@ -346,11 +348,13 @@ class Graph(Hypergraph):
             pass
         super(Graph, self).__init__(vertices, edges, weights, directed)
 
-    def uniform(self, k):
+    def uniform(self, k=None):
         """\
         Return whether this is a k-uniform hypergraph.
 
-        @param k: The value of k.
+        @param k: The value of k (optional).
         @type k: C{int}
+        @return: Uniformity.
+        @rtype: C{bool}
         """
-        return k == 2
+        return k is None or k == 2
