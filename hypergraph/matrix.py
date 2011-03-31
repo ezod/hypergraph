@@ -10,20 +10,17 @@ Hypergraph - matrix functions, algebraic and spectral graph theory.
 import numpy
 
 
-def degree_matrix(H, weighted=True):
+def degree_matrix(H):
     """\
     Return the degree matrix of a hypergraph. For directed hypergraphs,
     considers the indegree.
 
     @param H: The input hypergraph.
     @type H: L{Hypergraph}
-    @param weighted: Return the weighted degree matrix if true.
-    @type weighted: C{bool}
     @return: The degree matrix.
     @rtype: C{numpy.ndarray}
     """
-    return numpy.diag([H.indegree(v, weighted=weighted) \
-        for v in sorted(list(H.vertices))])
+    return numpy.diag([H.indegree(v) for v in sorted(list(H.vertices))])
 
 
 def adjacency_matrix(H):
@@ -40,7 +37,8 @@ def adjacency_matrix(H):
     adjacency = numpy.zeros((len(V), len(V)))
     for u in range(len(V)):
         for v in range(len(V)):
-            adjacency[u][v] = int(H.incident(V[u], V[v]))
+            adjacency[u][v] = sum([H.weights[edge] \
+                for edge in H.reachable(V[u], V[v])])
     return adjacency
 
 
