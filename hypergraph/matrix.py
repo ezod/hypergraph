@@ -73,12 +73,13 @@ def laplacian_matrix(H):
     """\
     Return the Laplacian matrix of a hypergraph.
 
-    J. A. Rodriguez, "On the Laplacian Eigenvalues and Metric Parameters of
-    Hypergraphs," Linear and Multilinear Algebra, vol. 50, no. 1, pp. 1-14,
-    2002.
+        - J. A. Rodriguez, "On the Laplacian Eigenvalues and Metric Parameters
+          of Hypergraphs," Linear and Multilinear Algebra, vol. 50, no. 1, pp.
+          1-14, 2002.
 
-    J. A. Rodriguez, "On the Laplacian Spectrum and Walk-Regular Hypergraphs,"
-    Linear and Multilinear Algebra, vol. 51, no. 3, pp. 285-297, 2003.
+        - J. A. Rodriguez, "On the Laplacian Spectrum and Walk-Regular
+          Hypergraphs," Linear and Multilinear Algebra, vol. 51, no. 3, pp.
+          285-297, 2003.
 
     @param H: The input graph.
     @type H: L{Hypergraph}
@@ -99,6 +100,6 @@ def laplacian_eigenvalues(L):
     @param L: The hypergraph Laplacian.
     @type L: C{numpy.ndarray}
     @return: The eigenvalues of L.
-    @rtype: C{list}
+    @rtype: C{numpy.ndarray}
     """
-    return list(numpy.linalg.eigvalsh(L))
+    return numpy.linalg.eigvalsh(L)
