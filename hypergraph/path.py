@@ -26,12 +26,9 @@ def dijkstra(G, start):
         assert G.uniform(2)
     except AssertionError:
         raise ValueError('function can only be applied to 2-uniform graphs')
-    dist = {}
-    prev = {}
+    dist = dict.fromkeys(G.vertices, float('inf'))
+    prev = dict.fromkeys(G.vertices, None)
     Q = set(G.vertices)
-    for vertex in G.vertices:
-        dist[vertex] = float('inf')
-        prev[vertex] = None
     dist[start] = 0.0
     while Q:
         u = None
