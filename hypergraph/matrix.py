@@ -34,7 +34,10 @@ def adjacency_matrix(G):
     @return: The adjacency matrix.
     @rtype: C{numpy.ndarray}
     """
-    assert G.uniform(2)
+    try:
+        assert G.uniform(2)
+    except AssertionError:
+        raise ValueError('function can only be applied to 2-uniform graphs')
     V = sorted(list(G.vertices))
     adjacency = numpy.zeros((len(V), len(V)))
     for u in range(len(V)):
@@ -52,7 +55,10 @@ def incidence_matrix(H):
     @return: The adjacency matrix.
     @rtype: C{numpy.ndarray}
     """
-    assert H.directed
+    try:
+        assert H.directed
+    except AssertionError:
+        raise ValueError('function can only be applied to directed hypergraphs')
     V = sorted(list(H.vertices))
     E = sorted(list(H.edges))
     dV = {}

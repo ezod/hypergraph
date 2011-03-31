@@ -19,7 +19,10 @@ def dot_export(G):
     @return: List of PyDot nodes.
     @rtype: C{list} of C{pydot.Node}
     """
-    assert G.uniform(2)
+    try:
+        assert G.uniform(2)
+    except AssertionError:
+        raise ValueError('function can only be applied to 2-uniform graphs')
     D = pydot.Dot(graph_type=(G.directed and 'digraph' or 'graph'))
     for v in G.vertices:
         D.add_node(pydot.Node(name=str(v), label=str(v)))
