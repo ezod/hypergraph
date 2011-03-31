@@ -45,7 +45,7 @@ def adjacency_matrix(G):
 
 def incidence_matrix(H):
     """\
-    Return the incidence matrix of a graph.
+    Return the incidence matrix of a hypergraph.
 
     @param H: The input directed hypergraph.
     @type H: L{Hypergraph}
