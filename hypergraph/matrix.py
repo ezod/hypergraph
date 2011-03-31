@@ -12,7 +12,8 @@ import numpy
 
 def degree_matrix(H, weighted=True):
     """\
-    Return the degree matrix of a hypergraph.
+    Return the degree matrix of a hypergraph. For directed hypergraphs,
+    considers the indegree.
 
     @param H: The input hypergraph.
     @type H: L{Hypergraph}
@@ -21,13 +22,14 @@ def degree_matrix(H, weighted=True):
     @return: The degree matrix.
     @rtype: C{numpy.ndarray}
     """
-    return numpy.diag([H.degree(v, weighted=weighted) \
+    return numpy.diag([H.indegree(v, weighted=weighted) \
         for v in sorted(list(H.vertices))])
 
 
 def adjacency_matrix(G):
     """\
-    Return the adjacency matrix of a graph.
+    Return the adjacency matrix of a graph. For directed graphs, considers the
+    indegree adjacency (incidence).
 
     @param G: The input graph.
     @type G: L{Graph}
@@ -42,7 +44,7 @@ def adjacency_matrix(G):
     adjacency = numpy.zeros((len(V), len(V)))
     for u in range(len(V)):
         for v in range(len(V)):
-            adjacency[u][v] = int(G.adjacent(V[u], V[v]))
+            adjacency[u][v] = int(G.incident(V[u], V[v]))
     return adjacency
 
 
