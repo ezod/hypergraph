@@ -238,6 +238,8 @@ class Hypergraph(object):
         @return: Adjacency.
         @rtype: C{bool}
         """
+        if u == v:
+            return False
         return any([(u in edge and v in edge) for edge in self.edges])
 
     def incident(self, tail, head):
@@ -253,6 +255,8 @@ class Hypergraph(object):
         @rtype: C{bool}
         """
         if self.directed:
+            if tail == head:
+                return False
             return any([(tail in edge and head in edge and edge.head == head) \
                 for edge in self.edges])
         else:
@@ -268,8 +272,7 @@ class Hypergraph(object):
         @return: The set of vertices adjacent to the vertex.
         @rtype: C{set}
         """
-        return set([v for v in self.vertices if self.incident(vertex, v)]) \
-            - set([vertex])
+        return set([v for v in self.vertices if self.incident(vertex, v)])
 
     def degree(self, vertex, weighted=True):
         """\
