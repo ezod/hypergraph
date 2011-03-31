@@ -230,37 +230,47 @@ class Hypergraph(object):
 
     def adjacent(self, u, v):
         """\
-        Return whether two vertices are adjacent (directly connected by a
-        hyperedge). Does not consider the direction of the hyperedge.
 
         @param u: The first vertex.
         @type u: C{object}
         @param v: The second vertex.
         @type v: C{object}
-        @return: Adjacency.
-        @rtype: C{bool}
+        @return: A set of 
+        @rtype: C{set} of L{Edge}
         """
         if u == v:
-            return False
-        return any([(u in edge and v in edge) for edge in self.edges])
+            return set()
+        return set([edge for edge in self.edges if u in edge and v in edge])
 
-    def incident(self, tail, head):
+    def incident(self, v):
         """\
-        Return whether there exists a directed hyperedge from the tail vertex
-        to the head vertex.
+        Return a set of edges incident on a vertex (for directed hypergraphs,
+        this implies that the vertex is the head of the edge).
+
+        @param v: The vertex.
+        @type v: C{object}
+        @return: A set of incident edges.
+        @rtype: C{set} of L{Edge}
+        """
+        if self.directed:
+            return set([edge for edge in self.edges if edge.head == v])
+        else:
+            return set([edge for edge in self.edges if v in edge])
+
+    def reachable(self, tail, head):
+        """\
+        Return a set of edges which contain the tail vertex and are directed
+        into the head vertex.
 
         @param tail: The tail vertex.
         @type tail: C{object}
         @param head: The head vertex.
         @type head: C{object}
-        @return: Incidence.
-        @rtype: C{bool}
+        @return: A set of edges from tail to head.
+        @rtype: C{set} of L{Edge}
         """
         if self.directed:
-            if tail == head:
-                return False
-            return any([(tail in edge and head in edge and edge.head == head) \
-                for edge in self.edges])
+            return self.adjacent(tail, head) & self.incident(head)
         else:
             return self.adjacent(tail, head)
 
@@ -274,7 +284,7 @@ class Hypergraph(object):
         @return: The set of vertices adjacent to the vertex.
         @rtype: C{set}
         """
-        return set([v for v in self.vertices if self.incident(vertex, v)])
+        return set([v for v in self.vertices if self.reachable(vertex, v)])
 
     def degree(self, vertex, weighted=True):
         """\
