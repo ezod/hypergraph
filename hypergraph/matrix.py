@@ -97,7 +97,7 @@ def laplacian_eigenvalues(L):
     @param L: The hypergraph Laplacian.
     @type L: C{numpy.ndarray}
     @return: The eigenvalues of L.
-    @rtype: C{list}
+    @rtype: C{list} of C{float}
     """
     return sorted(numpy.linalg.eigvalsh(L))
 
