@@ -22,6 +22,7 @@ def connected(H):
     @return: Connectivity.
     @rtype: C{bool}
     @raise ValueError: The hypergraph is not undirected.
+    @todo: Are there faster ways to determine connectedness for certain cases?
     """
     try:
         assert not H.directed
@@ -68,6 +69,7 @@ def isoperimetric_number(H):
     @type H: L{Hypergraph}
     @return: The isoperimetric number of H.
     @rtype: C{float}
+    @todo: Can edge cut cardinality be computed faster in some cases?
     """
     i = float('inf')
     for n in range(1, int(len(H.vertices) / 2) + 1):
