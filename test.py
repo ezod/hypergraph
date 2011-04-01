@@ -12,6 +12,7 @@ Unit tests for hypergraph.
 import unittest
 
 from hypergraph import *
+from hypergraph.matrix import *
 from hypergraph.orientation import *
 from hypergraph.path import *
 
@@ -102,6 +103,64 @@ class TestCore(unittest.TestCase):
         self.assertEqual(self.D.indegree('I', weighted=False), 3)
         self.assertEqual(self.D.outdegree('I', weighted=False), 8)
 
+
+class TestMatrix(unittest.TestCase):
+
+    def setUp(self):
+        V = set(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+        self.GU = Graph(vertices=V, directed=False)
+        self.GU.add_edge(Edge(['A', 'B']))
+        self.GU.add_edge(Edge(['A', 'F']))
+        self.GU.add_edge(Edge(['B', 'C']))
+        self.GU.add_edge(Edge(['B', 'E']))
+        self.GU.add_edge(Edge(['B', 'G']))
+        self.GU.add_edge(Edge(['C', 'D']))
+        self.GU.add_edge(Edge(['C', 'E']))
+        self.GU.add_edge(Edge(['D', 'E']))
+        self.GU.add_edge(Edge(['E', 'G']))
+        self.GU.add_edge(Edge(['F', 'G']))
+        self.GD = Graph(vertices=V, directed=True)
+        self.GD.add_edge(Edge(['A', 'B'], head='A'))
+        self.GD.add_edge(Edge(['A', 'F'], head='F'))
+        self.GD.add_edge(Edge(['B', 'C'], head='B'))
+        self.GD.add_edge(Edge(['B', 'E'], head='E'))
+        self.GD.add_edge(Edge(['B', 'G'], head='G'))
+        self.GD.add_edge(Edge(['C', 'D'], head='C'))
+        self.GD.add_edge(Edge(['C', 'E'], head='C'))
+        self.GD.add_edge(Edge(['D', 'E'], head='D'))
+        self.GD.add_edge(Edge(['E', 'G'], head='E'))
+        self.GD.add_edge(Edge(['F', 'G'], head='F'))
+        self.HU = Hypergraph(vertices=V, directed=False)
+        self.HU.add_edge(Edge(['A', 'B']))
+        self.HU.add_edge(Edge(['A', 'E', 'F']))
+        self.HU.add_edge(Edge(['B', 'C', 'D', 'G']))
+        self.HU.add_edge(Edge(['B', 'E']))
+        self.HU.add_edge(Edge(['B', 'G']))
+        self.HU.add_edge(Edge(['C', 'D', 'F']))
+        self.HU.add_edge(Edge(['C', 'E']))
+        self.HU.add_edge(Edge(['D']))
+        self.HU.add_edge(Edge(['E', 'G']))
+        self.HU.add_edge(Edge(['F', 'G']))
+
+    def test_degree_matrix(self):
+        self.assertTrue(numpy.all(degree_matrix(self.GU) == numpy.diag([2, 4, 3, 2, 4, 2, 3])))
+        self.assertTrue(numpy.all(degree_matrix(self.GD) == numpy.diag([1, 1, 2, 1, 2, 2, 1])))
+
+    def test_laplacian_eigenvalues(self):
+        eLGU = laplacian_eigenvalues(laplacian_matrix(self.GU))
+        eLHU = laplacian_eigenvalues(laplacian_matrix(self.HU))
+        self.assertTrue(abs(eLGU[0]) < 1e-8)
+        self.assertTrue(abs(eLHU[0]) < 1e-8)
+        self.assertFalse(abs(eLGU[1]) < 1e-8)
+        self.assertFalse(abs(eLHU[1]) < 1e-8)
+        self.GU.add_vertex('H')
+        self.GU.add_vertex('I')
+        self.GU.add_edge(Edge(['H', 'I']))
+        self.HU.add_vertex('H')
+        self.HU.add_vertex('I')
+        self.HU.add_edge(Edge(['H', 'I']))
+        self.assertTrue(abs(laplacian_eigenvalues(laplacian_matrix(self.GU))[1]) < 1e-8)
+        self.assertTrue(abs(laplacian_eigenvalues(laplacian_matrix(self.HU))[1]) < 1e-8)
 
 class TestPath(unittest.TestCase):
 
