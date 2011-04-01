@@ -11,6 +11,7 @@ from random import sample
 from copy import copy
 
 from .core import Hypergraph, Edge
+from .search import breadth_first_search
 
 
 def random_orientation(H):
@@ -45,21 +46,9 @@ def minimum_maximum_indegree_orientation(H):
     @rtype: L{Hypergraph}
     """
     def find_reducing_path(L, D, u):
-        # initialize the breadth-first search
-        marked = set([u])
-        Q = [(u, [])]
-        # breadth-first search for a directed path to an endpoint
-        while Q:
-            v, path = Q.pop()
-            for edge in [edge for edge in L.edges if edge.head is v]:
-                for w in edge:
-                    if w in marked:
-                        continue
-                    elif D[w] < D[u] - 1:
-                        return path + [(edge, w)]
-                    elif D[w] <= D[u]:
-                        marked.add(w)
-                        Q.append((w, path + [(edge, w)]))
+        for w, path in breadth_first_search(L, u):
+            if D[w] < D[u] - 1:
+                return path
         return None
 
     # generate L, an arbitrary orientation of H

@@ -104,6 +104,37 @@ class TestCore(unittest.TestCase):
         self.assertEqual(self.D.outdegree('I', weighted=False), 8)
 
 
+class TestOrientation(unittest.TestCase):
+
+    def setUp(self):
+        V = set(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'])
+        self.U = Hypergraph(vertices=V)
+        self.U.add_edge(Edge(['A', 'D', 'C', 'I', 'G', 'H', 'B']))
+        self.U.add_edge(Edge(['E', 'D', 'F', 'A']))
+        self.U.add_edge(Edge(['F', 'B', 'C']))
+        self.U.add_edge(Edge(['D', 'E', 'J']))
+        self.U.add_edge(Edge(['B', 'C', 'E', 'A', 'I', 'G', 'F']))
+        self.U.add_edge(Edge(['I', 'H', 'G', 'J', 'C', 'D']))
+        self.U.add_edge(Edge(['G', 'F', 'E']))
+        self.U.add_edge(Edge(['D', 'G', 'E', 'H', 'F', 'C', 'B', 'A', 'I']))
+        self.U.add_edge(Edge(['J', 'C', 'H', 'B', 'F', 'D', 'E', 'A']))
+        self.U.add_edge(Edge(['J', 'D', 'G']))
+        self.U.add_edge(Edge(['F', 'G', 'I', 'H']))
+        self.U.add_edge(Edge(['D']))
+        self.U.add_edge(Edge(['C', 'J', 'H', 'E', 'G', 'F', 'A', 'I', 'D', 'B']))
+        self.U.add_edge(Edge(['A', 'G']))
+        self.U.add_edge(Edge(['G', 'H', 'D', 'I', 'A', 'J', 'E', 'B', 'F']))
+        self.U.add_edge(Edge(['I', 'D']))
+        self.U.add_edge(Edge(['E', 'G', 'I']))
+        self.U.add_edge(Edge(['B', 'J', 'A', 'H']))
+        self.U.add_edge(Edge(['I', 'D', 'E', 'B']))
+        self.U.add_edge(Edge(['H', 'C', 'I']))
+
+    def test_mmio(self):
+        L = minimum_maximum_indegree_orientation(self.U)
+        self.assertEqual(max([L.indegree(v) for v in L.vertices]), 2)
+
+
 class TestMatrix(unittest.TestCase):
 
     def setUp(self):
