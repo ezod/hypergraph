@@ -81,25 +81,39 @@ def laplacian_matrix(H):
           Hypergraphs," Linear and Multilinear Algebra, vol. 51, no. 3, pp.
           285-297, 2003.
 
-    @param H: The input graph.
+    @param H: The input hypergraph.
     @type H: L{Hypergraph}
     @return: The Laplacian matrix.
     @rtype: C{numpy.ndarray}
     """
     A = adjacency_matrix(H)
-    if H.uniform(2):
-        return degree_matrix(H) - A
-    else:
-        return numpy.diag(numpy.sum(A, axis=0)) - A
+    return numpy.diag(numpy.sum(A, axis=0)) - A
 
 
 def laplacian_eigenvalues(L):
     """\
-    Return the eigenvalues of a hypergraph Laplacian.
+    Return the eigenvalues of a hypergraph Laplacian in ascending order.
 
     @param L: The hypergraph Laplacian.
     @type L: C{numpy.ndarray}
     @return: The eigenvalues of L.
-    @rtype: C{numpy.ndarray}
+    @rtype: C{list}
     """
-    return numpy.linalg.eigvalsh(L)
+    return sorted(numpy.linalg.eigvalsh(L))
+
+
+def connected_by_laplacian(H):
+    """\
+    Return whether an undirected hypergraph is connected using the eigenvalues
+    of its Laplacian matrix.
+
+    @param H: The input undirected hypergraph.
+    @type H: L{Hypergraph}
+    @return: Connectivity.
+    @rtype: C{bool}
+    """
+    try:
+        assert not H.directed
+    except AssertionError:
+        raise ValueError('function only applies to undirected hypergraphs')
+    return laplacian_eigenvalues(laplacian_matrix(H))[1] > 0
