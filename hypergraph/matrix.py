@@ -25,8 +25,9 @@ def degree_matrix(H):
 
 def adjacency_matrix(H):
     """\
-    Return the adjacency matrix of a graph. For directed graphs, considers the
-    indegree adjacency (incidence).
+    Return the adjacency matrix of a hypergraph. For directed hypergraphs,
+    considers the indegree adjacency (the column index is associated with the
+    head vertex).
 
     @param H: The input graph.
     @type H: L{Hypergraph}
