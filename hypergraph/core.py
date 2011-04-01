@@ -119,7 +119,6 @@ class Hypergraph(object):
         try:
             for edge in edges:
                 assert isinstance(edge, Edge)
-                assert all([vertex in vertices for vertex in edge])
                 assert (not directed and not edge.head) \
                     or (directed and edge.head)
                 try:
@@ -130,6 +129,7 @@ class Hypergraph(object):
             raise ValueError('invalid edge %s' % edge)
         except TypeError:
             pass
+        self._vertices.update(*edges)
         self._edges = edges
 
     def __eq__(self, other):
@@ -191,11 +191,11 @@ class Hypergraph(object):
         """
         try:
             assert isinstance(edge, Edge)
-            assert all([vertex in self.vertices for vertex in edge])
             assert (not self.directed and not edge.head) \
                 or (self.directed and edge.head)
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
+        self._vertices.update(edge)
         self._edges.add(edge)
         self.weights[edge] = weight
 

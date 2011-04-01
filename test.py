@@ -81,7 +81,8 @@ class TestCore(unittest.TestCase):
         self.assertFalse(Edge(['I', 'D']) in self.U.weights.keys())
 
     def test_add_edge(self):
-        self.assertRaises(ValueError, self.U.add_edge, Edge(['A', 'Z']))
+        self.U.add_edge(Edge(['A', 'Z']))
+        self.assertTrue('Z' in self.U.vertices)
 
     def test_remove_edge(self):
         self.U.remove_edge(Edge(['I', 'D']))
