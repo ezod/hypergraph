@@ -15,8 +15,13 @@ from .core import Edge
 def dijkstra(G, start):
     """\
     Dijkstra's algorithm for finding the shortest paths from the start vertex to
-    all other vertices.
+    all other vertices in graphs with nonnegative weights.
 
+        - E. W. Dijkstra, "A Note on Two Problems in Connexion with Graphs,"
+          Numerische Mathematik, vol. 1, pp. 269-271, 1959.
+
+    @param G: The graph.
+    @type G: L{Graph}
     @param start: The start vertex.
     @type start: C{object}
     @return: The "previous" array of Dijkstra's algoritm.
@@ -26,6 +31,10 @@ def dijkstra(G, start):
         assert G.uniform(2)
     except AssertionError:
         raise ValueError('function can only be applied to 2-uniform graphs')
+    try:
+        assert all([weight >= 0 for weight in G.weights.values()])
+    except AssertionError:
+        raise ValueError('graph must have only nonnegative weights')
     dist = dict.fromkeys(G.vertices, float('inf'))
     prev = dict.fromkeys(G.vertices, None)
     Q = set(G.vertices)
@@ -45,10 +54,49 @@ def dijkstra(G, start):
     return prev
 
 
+def bellman_ford(G, start):
+    """\
+    Bellman-Ford algorithm for finding the shortest paths from the start vertex
+    to all other vertices in directed graphs.
+
+        - R. Bellman, "On a Routing Problem," Quarterly of Applied Mathematics,
+          vol. 16, no. 1, pp. 87-90, 1958.
+
+        - L. R. Ford Jr. and D. R. Fulkerson, "Flows in Networks," Princeton
+          University Press, 1962.
+
+    @param G: The directed graph.
+    @type G: L{Graph}
+    @param start: The start vertex.
+    @type start: C{object}
+    @return:
+    @rtype: C{dict}
+    """
+    try:
+        assert G.directed
+        assert G.uniform(2)
+    except AssertionError:
+        raise ValueError('function can only be applied to 2-uniform digraphs')
+    dist = dict.fromkeys(G.vertices, float('inf'))
+    prev = dict.fromkeys(G.vertices, None)
+    dist[start] = 0.0
+    for i in range(1, len(G.vertices) - 1):
+        for edge in G.edges:
+            u, v = edge.tail.pop(), edge.head
+            if dist[u] + G.weights[edge] < dist[v]:
+                dist[v] = dist[u] + G.weights[edge]
+                prev[v] = u
+    for edge in G.edges:
+        u, v = edge.tail.pop(), edge.head
+        if dist[u] + G.weights[edge] < dist[v]:
+            raise ValueError('graph contains a negative-weight cycle')
+    return prev
+
+
 def shortest_path(G, start, end):
     """\
-    Find the shortest path from the start vertex to the end vertex using
-    Dijkstra's algorithm.
+    Find the shortest path from the start vertex to the end vertex. Attempt to
+    use Dijkstra's algorithm first, then Bellman-Ford algorithm.
 
     @param start: The start vertex.
     @type start: C{object}
@@ -57,7 +105,10 @@ def shortest_path(G, start, end):
     @return: Shortest path vertex list and total distance.
     @rtype: C{list}, C{float}
     """
-    prev = dijkstra(G, start)
+    try:
+        prev = dijkstra(G, start)
+    except ValueError:
+        prev = bellman_ford(G, start)
     path = []
     u = end
     dist = 0.0
@@ -74,6 +125,12 @@ def floyd_warshall(G):
     """\
     Floyd-Warshall algorithm for finding the shortest path lengths between all
     pairs of vertices in a graph.
+
+        - R. W. Floyd, "Algorithm 97: Shortest Path," Comm. of the ACM, vol. 5,
+          no. 6, p. 345, 1962.
+
+        - S. Warshall, "A Theorem on Boolean Matrices," J. of the ACM, vol. 9,
+          no. 1, pp. 11-12, 1962.
 
     @param G: The input graph.
     @type G: L{Graph}
