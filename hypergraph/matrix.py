@@ -101,21 +101,3 @@ def laplacian_eigenvalues(L):
     @rtype: C{list} of C{float}
     """
     return sorted(numpy.linalg.eigvalsh(L))
-
-
-def connected_by_laplacian(H):
-    """\
-    Return whether an undirected hypergraph is connected using the eigenvalues
-    of its Laplacian matrix.
-
-    @param H: The input undirected hypergraph.
-    @type H: L{Hypergraph}
-    @return: Connectivity.
-    @rtype: C{bool}
-    @raise ValueError: The hypergraph is not undirected.
-    """
-    try:
-        assert not H.directed
-    except AssertionError:
-        raise ValueError('function only applies to undirected hypergraphs')
-    return laplacian_eigenvalues(laplacian_matrix(H))[1] > 0
