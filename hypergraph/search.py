@@ -15,6 +15,8 @@ def breadth_first_search(H, start):
 
     @param H: The input hypergraph.
     @type H: L{Hypergraph}
+    @param start: The start vertex.
+    @type start: C{object}
     """
     marked = set([start])
     Q = [(start, [])]
