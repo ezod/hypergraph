@@ -12,9 +12,11 @@ Unit tests for hypergraph.
 import unittest
 
 from hypergraph import *
+from hypergraph.connectivity import *
 from hypergraph.matrix import *
 from hypergraph.orientation import *
 from hypergraph.path import *
+from hypergraph.search import *
 
 
 class TestCore(unittest.TestCase):
@@ -196,7 +198,7 @@ class TestMatrix(unittest.TestCase):
 class TestPath(unittest.TestCase):
 
     def setUp(self):
-        V = set([1, 2, 3, 4, 5])
+        V = range(1, 6)
         self.U = Graph(vertices=V, directed=False)
         self.D = Graph(vertices=V, directed=True)
         for G in [self.U, self.D]:
@@ -235,6 +237,37 @@ class TestPath(unittest.TestCase):
     def test_floyd_warshall(self):
         self.assertEqual(floyd_warshall(self.U)[1][5], 3.25)
         self.assertEqual(floyd_warshall(self.D)[1][5], 4.76)
+
+
+class TestSearch(unittest.TestCase):
+
+    def setUp(self):
+        V = range(1, 13)
+        self.T = Graph(vertices=V)
+        self.T.add_edge(Edge([1, 2]))
+        self.T.add_edge(Edge([1, 3]))
+        self.T.add_edge(Edge([1, 4]))
+        self.T.add_edge(Edge([2, 5]))
+        self.T.add_edge(Edge([2, 6]))
+        self.T.add_edge(Edge([4, 7]))
+        self.T.add_edge(Edge([4, 8]))
+        self.T.add_edge(Edge([5, 9]))
+        self.T.add_edge(Edge([5, 10]))
+        self.T.add_edge(Edge([7, 11]))
+        self.T.add_edge(Edge([7, 12]))
+        # TODO: test for non-trees, hypergraphs
+
+    def test_breadth_first(self):
+        B = [v for v in breadth_first_search(self.T, 1)]
+        self.assertEqual(B[0], 1)
+        self.assertEqual(set(B[1:4]), set([2, 3, 4]))
+        self.assertEqual(set(B[4:8]), set([5, 6, 7, 8]))
+        self.assertEqual(set(B[8:12]), set([9, 10, 11, 12]))
+
+    def test_depth_first(self):
+        D = [v for v in depth_first_search(self.T, 1)]
+        self.assertEqual(D[0], 1)
+        # TODO: not really sure how to test this due to set ordering
 
 
 if __name__ == '__main__':

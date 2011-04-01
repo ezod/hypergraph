@@ -276,20 +276,27 @@ class Hypergraph(object):
             return set()
         return set([edge for edge in self.edges if u in edge and v in edge])
 
-    def incident(self, v):
+    def incident(self, v, forward=True):
         """\
-        Return a set of edges incident on a vertex (for directed hypergraphs,
-        this implies that the vertex is the head of the edge).
+        Return a set of edges incident on a vertex. In an undirected hypergraph,
+        this returns every edge containing the specified vertex (and the
+        forward parameter has no effect). In a directed hypergraph, by default,
+        this returns edges with the specified head vertex; if the forward
+        parameter is set to False, it returns edges for which the specified
+        vertex is a tail vertex.
 
         @param v: The vertex.
         @type v: C{object}
+        @param forward: Direction of incidence.
+        @type forward: C{bool}
         @return: A set of incident edges.
         @rtype: C{set} of L{Edge}
         """
-        if self.directed:
+        if forward and self.directed:
             return set([edge for edge in self.edges if edge.head == v])
         else:
-            return set([edge for edge in self.edges if v in edge])
+            return set([edge for edge in self.edges \
+                if v in edge and edge.head != v])
 
     def reachable(self, tail, head):
         """\
