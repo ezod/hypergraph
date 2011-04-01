@@ -111,6 +111,7 @@ def connected_by_laplacian(H):
     @type H: L{Hypergraph}
     @return: Connectivity.
     @rtype: C{bool}
+    @raise ValueError: The hypergraph is not undirected.
     """
     try:
         assert not H.directed

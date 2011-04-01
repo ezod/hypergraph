@@ -26,15 +26,14 @@ def dijkstra(G, start):
     @type start: C{object}
     @return: The "previous" array of Dijkstra's algoritm.
     @rtype: C{dict}
+    @raise ValueError: Graph is not 2-uniform or has negative edge weights.
     """
     try:
         assert G.uniform(2)
-    except AssertionError:
-        raise ValueError('function can only be applied to 2-uniform graphs')
-    try:
         assert all([weight >= 0 for weight in G.weights.values()])
     except AssertionError:
-        raise ValueError('graph must have only nonnegative weights')
+        raise ValueError(('function can only be applied to 2-uniform graphs '
+                          'with nonnegative edge weights'))
     dist = dict.fromkeys(G.vertices, float('inf'))
     prev = dict.fromkeys(G.vertices, None)
     Q = set(G.vertices)
@@ -71,6 +70,8 @@ def bellman_ford(G, start):
     @type start: C{object}
     @return:
     @rtype: C{dict}
+    @raise ValueError: Graph is not 2-uniform or is not directed.
+    @raise RuntimeError: Graph contains a negative-weight cycle.
     """
     try:
         assert G.directed
@@ -89,7 +90,7 @@ def bellman_ford(G, start):
     for edge in G.edges:
         u, v = edge.tail.pop(), edge.head
         if dist[u] + G.weights[edge] < dist[v]:
-            raise ValueError('graph contains a negative-weight cycle')
+            raise RuntimeError('graph contains a negative-weight cycle')
     return prev
 
 
@@ -136,6 +137,7 @@ def floyd_warshall(G):
     @type G: L{Graph}
     @return: A two-dimensional dictionary of pairwise shortest path lengths.
     @rtype: C{dict} of C{dict} of C{float}
+    @raise ValueError: Graph is not 2-uniform.
     """
     try:
         assert G.uniform(2)

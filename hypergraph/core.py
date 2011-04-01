@@ -19,6 +19,8 @@ class Edge(frozenset):
         @type edge: C{object}
         @param head: Head vertex (optional).
         @type head: C{object}
+        @raise TypeError: One or more vertices are not immutable.
+        @raise ValueError: No vertices given.
         """
         try:
             assert all([vertex.__hash__ for vertex in edge])
@@ -36,6 +38,7 @@ class Edge(frozenset):
         @type edge: C{object}
         @param head: Head vertex (optional).
         @type head: C{object}
+        @raise ValueError: Specified head vertex not in edge.
         """
         try:
             assert not head or head in self
@@ -70,6 +73,8 @@ class Edge(frozenset):
     def head(self):
         """\
         Edge head.
+
+        @rtype: C{object}
         """
         return self._head
 
@@ -77,6 +82,8 @@ class Edge(frozenset):
     def tail(self):
         """\
         Edge tail set.
+
+        @rtype: C{set}
         """
         return set(self) - set([self._head])
 
@@ -97,6 +104,8 @@ class Hypergraph(object):
         @type weights: C{dict}
         @param directed: Directedness of this hypergraph.
         @type directed: C{bool}
+        @raise TypeError: One or more vertices are not immutable.
+        @raise ValueError: One or more edges are not valid for this hypergraph.
         """
         vertices = vertices and set(vertices) or set()
         edges = edges and set(edges) or set()
@@ -126,6 +135,8 @@ class Hypergraph(object):
     def __eq__(self, other):
         """\
         Equality operator.
+
+        @rtype: C{bool}
         """
         return self.vertices == other.vertices and self.edges == other.edges \
             and all([abs(self.weights[edge] - other.weights[edge]) < 1e-4 \
@@ -134,6 +145,8 @@ class Hypergraph(object):
     def __repr__(self):
         """\
         Canonical string representation.
+
+        @rtype: C{str}
         """
         return '%s(vertices=%s, edges=%s, weights=%s, directed=%s)' % \
             (self.__class__.__name__, self.vertices, self.edges, self.weights,
@@ -145,6 +158,7 @@ class Hypergraph(object):
 
         @param vertex: The vertex object to add.
         @type vertex: C{object}
+        @raise TypeError: Vertex object is not immutable.
         """
         try:
             assert vertex.__hash__
@@ -173,6 +187,7 @@ class Hypergraph(object):
         @type edge: L{Edge}
         @param weight: The weight of the edge.
         @type weight: C{float}
+        @raise ValueError: Edge is not valid for this hypergraph.
         """
         try:
             assert isinstance(edge, Edge)
@@ -198,6 +213,8 @@ class Hypergraph(object):
     def directed(self):
         """\
         Directedness of the hypergraph.
+
+        @rtype: C{bool}
         """
         return self._directed
 
@@ -205,6 +222,8 @@ class Hypergraph(object):
     def vertices(self):
         """\
         Vertex set of the hypergraph.
+
+        @rtype: C{set}
         """
         return self._vertices
 
@@ -212,6 +231,8 @@ class Hypergraph(object):
     def edges(self):
         """\
         Edge set of the hypergraph.
+
+        @rtype: C{set}
         """
         return self._edges
 
@@ -362,6 +383,7 @@ class Graph(Hypergraph):
         @type weights: C{dict}
         @param directed: Directedness of this graph.
         @type directed: C{bool}
+        @raise ValueError: Initial edges are not 2-uniform.
         """
         try:
             assert all([len(edge) == 2 for edge in edges])

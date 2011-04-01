@@ -18,6 +18,7 @@ def dot_export(G):
     @type G: L{Graph}
     @return: List of PyDot nodes.
     @rtype: C{list} of C{pydot.Node}
+    @raise ValueError: Graph is not 2-uniform.
     """
     try:
         assert G.uniform(2)
