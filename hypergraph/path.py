@@ -9,7 +9,9 @@ Hypergraph - path algorithms.
 
 from copy import deepcopy
 
-from .core import Edge
+from .core import Graph, Edge
+from .search import breadth_first_search
+from .connectivity import connected
 
 
 def dijkstra(G, start):
@@ -179,3 +181,38 @@ def shortest_path_subgraph(G):
         if S.weights[edge] > path[edge.tail.pop()][edge.head]:
             S.remove_edge(edge)
     return S
+
+
+def minimum_spanning_tree(G):
+    """\
+    Return the minimum spanning tree of a graph via Kruskal's algorithm.
+
+        - J. B. Kruskal, "On the Shortest Spanning Subtree of a Graph and the
+          Traveling Salesman Problem," Proc. American Mathematical Soc., vol. 7,
+          pp. 48-50, 1956.
+
+    @param G: The input undirected graph.
+    @type G: L{Graph}
+    @return: The shortest path subgraph.
+    @rtype: L{Graph}
+    @raise ValueError: Graph is not 2-uniform or is directed.
+    """
+    try:
+        assert not G.directed
+        assert G.uniform(2)
+    except AssertionError:
+        raise ValueError(('function can only be applied to 2-uniform'
+                         'undirected graphs'))
+    ebw = sorted(G.edges, key=G.weights.__getitem__)
+    MST = Graph(vertices=G.vertices)
+    while ebw and not connected(MST):
+        edge = ebw.pop(0)
+        u, v = tuple(edge)
+        path = False
+        for w in breadth_first_search(MST, u):
+            if w == v:
+                path = True
+                break
+        if not path:
+            MST.add_edge(edge, weight=G.weights[edge])
+    return MST

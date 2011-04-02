@@ -28,7 +28,7 @@ def connected(H):
         assert not H.directed
     except AssertionError:
         raise ValueError('function only applies to undirected hypergraphs')
-    return laplacian_eigenvalues(laplacian_matrix(H))[1] > 0
+    return laplacian_eigenvalues(laplacian_matrix(H))[1] > 1e-8
 
 
 def edge_cut(H, X):

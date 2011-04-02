@@ -239,6 +239,10 @@ class TestPath(unittest.TestCase):
         self.assertEqual(floyd_warshall(self.U)[1][5], 3.25)
         self.assertEqual(floyd_warshall(self.D)[1][5], 4.76)
 
+    def test_minimum_spanning_tree(self):
+        MST = minimum_spanning_tree(self.U)
+        self.assertEqual(MST.edges, set([Edge([3, 4]), Edge([2, 3]), Edge([4, 5]), Edge([1, 2])]))
+
 
 class TestSearch(unittest.TestCase):
 
