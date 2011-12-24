@@ -11,7 +11,7 @@ Unit tests for hypergraph.
 
 import unittest
 
-from hypergraph import *
+from hypergraph.core import *
 from hypergraph.connectivity import *
 from hypergraph.matrix import *
 from hypergraph.orientation import *
