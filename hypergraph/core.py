@@ -65,7 +65,7 @@ class Edge(frozenset):
         """
         if self.head:
             return '%s(%s, \'%s\')' % \
-                (self.__class__.__name__, list(self), self.head)
+                (type(self).__name__, list(self), self.head)
         else:
             return super(Edge, self).__repr__()
 
@@ -149,7 +149,7 @@ class Hypergraph(object):
         @rtype: C{str}
         """
         return '%s(vertices=%s, edges=%s, weights=%s, directed=%s)' % \
-            (self.__class__.__name__, self.vertices, self.edges, self.weights,
+            (type(self).__name__, self.vertices, self.edges, self.weights,
              self.directed)
 
     def add_vertex(self, vertex):
