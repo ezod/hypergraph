@@ -51,7 +51,7 @@ class Edge(frozenset):
         Hash function.
         """
         return super(Edge, self).__hash__() + \
-            (self.head and self.head.__hash__() or 0)
+            (self.head.__hash__() if self.head else 0)
 
     def __eq__(self, other):
         """\
@@ -107,8 +107,8 @@ class Hypergraph(object):
         @raise TypeError: One or more vertices are not immutable.
         @raise ValueError: One or more edges are not valid for this hypergraph.
         """
-        vertices = vertices and set(vertices) or set()
-        edges = edges and set(edges) or set()
+        vertices = set(vertices) if vertices else set()
+        edges = set(edges) if edges else set()
         self._directed = directed
         try:
             assert all([vertex.__hash__ for vertex in vertices])
@@ -338,7 +338,7 @@ class Hypergraph(object):
         @return: Degree of the vertex.
         @rtype: C{float}
         """
-        return sum([weighted and self.weights[edge] or 1 for edge \
+        return sum([self.weights[edge] if weighted else 1 for edge \
             in self.edges if vertex in edge])
 
     def indegree(self, vertex, weighted=True):
@@ -354,7 +354,7 @@ class Hypergraph(object):
         """
         if not self.directed:
             return self.degree(vertex, weighted)
-        return sum([weighted and self.weights[edge] or 1 for edge \
+        return sum([self.weights[edge] if weighted else 1 for edge \
             in self.edges if edge.head == vertex])
         
     def outdegree(self, vertex, weighted=True):
@@ -370,7 +370,7 @@ class Hypergraph(object):
         """
         if not self.directed:
             return self.degree(vertex, weighted)
-        return sum([weighted and self.weights[edge] or 1 for edge \
+        return sum([self.weights[edge] if weighted else 1 for edge \
             in self.edges if vertex in edge and edge.head != vertex])
         
 

@@ -22,7 +22,7 @@ def breadth_first_search(H, start):
     while Q:
         v = Q.pop(0)
         for edge in H.incident(v, forward=False):
-            for w in (H.directed and [edge.head] or edge):
+            for w in ([edge.head] if H.directed else edge):
                 if not w in marked:
                     marked.add(w)
                     Q.append(w)
@@ -48,7 +48,7 @@ def depth_first_search(H, start, marked=None):
     marked.add(start)
     for edge in H.incident(start, forward=False):
         if not edge in marked:
-            for w in (H.directed and [edge.head] or edge):
+            for w in ([edge.head] if H.directed else edge):
                 if not w in marked:
                     yield w
                     for y in depth_first_search(H, w, marked=marked):

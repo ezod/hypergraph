@@ -48,7 +48,7 @@ def dijkstra(G, start):
         Q.remove(u)
         for vertex in G.neighbors(u):
             alt = dist[u] + G.weights[Edge([u, vertex],
-                head=(G.directed and vertex or None))]
+                head=(vertex if G.directed else None))]
             if alt < dist[vertex]:
                 dist[vertex] = alt
                 prev[vertex] = u
@@ -119,7 +119,7 @@ def shortest_path(G, start, end):
         path.insert(0, u)
         if prev[u]:
             dist += G.weights[Edge([prev[u], u],
-                head=(G.directed and u or None))]
+                head=(u if G.directed else None))]
         u = prev[u]
     return path, dist
 
@@ -154,7 +154,7 @@ def floyd_warshall(G):
                 continue
             try:
                 path[u][v] = G.weights[Edge([u, v],
-                    head=(G.directed and v or None))]
+                    head=(v if G.directed else None))]
             except KeyError:
                 path[u][v] = float('inf')
     for w in G.vertices:

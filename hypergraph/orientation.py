@@ -126,8 +126,8 @@ def minimum_maximum_weighted_indegree_orientation(H):
     while accepted:
         accepted = False
         V = [vertex for vertex in L.vertices]
-        V.sort(cmp=lambda a, b: L.indegree(a) < L.indegree(b) and -1 \
-            or L.indegree(a) > L.indegree(b) and 1 or 0)
+        V.sort(cmp=lambda a, b: -1 if L.indegree(a) < L.indegree(b) else \
+            (1 if L.indegree(a) > L.indegree(b) else 0))
         try:
             for v1 in reversed(V):
                 for v2 in V:
