@@ -1,18 +1,15 @@
 #!/usr/bin/env python
-
-from hypergraph import __version__
+exec(open('hypergraph/version.py').read())
 VERSION = "%s.%s.%s" % __version__[0:3]
+NAME = 'hypergraph'
+URL = 'http://github.com/ezod/hypergraph'
+PACKAGE = 'hypergraph'
 
 from setuptools import setup
 from distutils.cmd import Command
 from shutil import rmtree
 import os
 import sys
-import epydoc.cli
-
-NAME = 'hypergraph'
-URL = 'http://github.com/ezod/hypergraph'
-PACKAGE = 'hypergraph'
 
 class GenerateDoc(Command):
     user_options = []
@@ -24,6 +21,7 @@ class GenerateDoc(Command):
         pass
 
     def run(self):
+        import epydoc.cli
         rmtree('doc', ignore_errors=True)
         os.mkdir('doc')
         # okay, this is a bit of a hack
