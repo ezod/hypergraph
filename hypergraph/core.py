@@ -107,8 +107,8 @@ class Hypergraph(object):
         @raise TypeError: One or more vertices are not immutable.
         @raise ValueError: One or more edges are not valid for this hypergraph.
         """
-        vertices = set(vertices) if vertices else set()
-        edges = set(edges) if edges else set()
+        vertices = set(vertices) if vertices is not None else set()
+        edges = set(edges) if edges is not None else set()
         self._directed = directed
         try:
             assert all([vertex.__hash__ for vertex in vertices])
