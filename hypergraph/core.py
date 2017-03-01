@@ -26,7 +26,7 @@ class Edge(frozenset):
             assert all([vertex.__hash__ for vertex in edge])
         except (AttributeError, AssertionError):
             raise TypeError('vertices must be immutable')
-        if not edge:
+        if len(edge) < 1:
             raise ValueError('edge must contain at least one vertex')
         return frozenset.__new__(cls, edge)
 
@@ -41,7 +41,7 @@ class Edge(frozenset):
         @raise ValueError: Specified head vertex not in edge.
         """
         try:
-            assert not head or head in self
+            assert head is None or head in self
         except AssertionError:
             raise ValueError('edge has no vertex %s' % head)
         self._head = head
@@ -51,7 +51,7 @@ class Edge(frozenset):
         Hash function.
         """
         return super(Edge, self).__hash__() + \
-            (self.head.__hash__() if self.head else 0)
+            (self.head.__hash__() if self.head is not None else 0)
 
     def __eq__(self, other):
         """\
@@ -119,8 +119,8 @@ class Hypergraph(object):
         try:
             for edge in edges:
                 assert isinstance(edge, Edge)
-                assert (not directed and not edge.head) \
-                    or (directed and edge.head)
+                assert (not directed and edge.head is None) \
+                    or (directed and edge.head is not None)
                 try:
                     self.weights[edge] = float(weights[edge])
                 except (KeyError, TypeError):
@@ -191,8 +191,8 @@ class Hypergraph(object):
         """
         try:
             assert isinstance(edge, Edge)
-            assert (not self.directed and not edge.head) \
-                or (self.directed and edge.head)
+            assert (not self.directed and edge.head is None) \
+                or (self.directed and edge.head is not None)
         except AssertionError:
             raise ValueError('invalid edge %s' % edge)
         self._vertices.update(edge)
