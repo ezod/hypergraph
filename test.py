@@ -66,6 +66,14 @@ class TestCore(unittest.TestCase):
         self.D.add_edge(Edge(['A', 'C', 'B', 'E', 'D', 'G', 'F', 'I', 'H'], 'E'), weight=6.847455)
         self.D.add_edge(Edge(['A', 'C', 'B', 'E', 'D', 'F', 'H', 'J'], 'D'), weight=9.601762)
 
+    def test_zero_head(self):
+        G = Hypergraph(vertices=[0, 1, 2, 3], directed=True)
+        self.assertTrue(0 in G.vertices)
+        E = Edge([0], head=0)
+        self.assertTrue(E.head == 0)
+        G.add_edge(E)
+        self.assertTrue(E in G.edges)
+
     def test_equal_repr(self):
         self.assertEqual(Hypergraph(), Hypergraph())
         self.assertEqual(Graph(), Graph())
